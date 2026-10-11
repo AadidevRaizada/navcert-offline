@@ -1,0 +1,61 @@
+<section id="fix-the-light" data-transition="fade" style="background:#F7F4EE;font-family:'Instrument Sans',sans-serif;color:#0D1B2A;display:flex;flex-direction:column;padding:128px 128px 160px;"><p style="position:absolute;left:128px;top:88px;width:1500px;font-family:'DM Mono',monospace;font-size:28px;font-weight:500;color:#1F4BD8;line-height:1.2;letter-spacing:4px;">HISTOGRAM PROCESSING</p><h1 style="position:absolute;left:128px;top:130px;width:1664px;font-family:'Bricolage Grotesque',sans-serif;font-size:96px;font-weight:800;color:#0D1B2A;line-height:1.04;letter-spacing:-1px;">64 dimmer switches, not one</h1><div data-build-in="fade order 2" style="position:absolute;left:128px;top:336px;width:8px;height:150px;background:#D62828;border-radius:4px;"></div><p data-build-in="rise order 2" style="position:absolute;left:160px;top:332px;width:600px;font-family:'DM Mono',monospace;font-size:26px;font-weight:500;color:#D62828;line-height:1.2;letter-spacing:3px;">GLOBAL HE</p><p data-build-in="rise order 2" style="position:absolute;left:160px;top:372px;width:610px;font-family:'Instrument Sans',sans-serif;font-size:30px;font-weight:400;color:#0D1B2A;line-height:1.3;">One mapping for the whole page. The shadow stays dark and flat paper turns noisy.</p><div data-build-in="fade order 3" style="position:absolute;left:128px;top:526px;width:8px;height:150px;background:#1F4BD8;border-radius:4px;"></div><p data-build-in="rise order 3" style="position:absolute;left:160px;top:522px;width:600px;font-family:'DM Mono',monospace;font-size:26px;font-weight:500;color:#1F4BD8;line-height:1.2;letter-spacing:3px;">CLAHE</p><p data-build-in="rise order 3" style="position:absolute;left:160px;top:562px;width:610px;font-family:'Instrument Sans',sans-serif;font-size:30px;font-weight:400;color:#0D1B2A;line-height:1.3;">8×8 tiles, histogram clipped at 2.2×, bilinear blend. An even page with capped noise.</p><div data-build-in="fade order 4" style="position:absolute;left:128px;top:716px;width:8px;height:150px;background:#5B6472;border-radius:4px;"></div><p data-build-in="rise order 4" style="position:absolute;left:160px;top:712px;width:600px;font-family:'DM Mono',monospace;font-size:26px;font-weight:500;color:#5B6472;line-height:1.2;letter-spacing:3px;">IN THE LAB</p><p data-build-in="rise order 4" style="position:absolute;left:160px;top:752px;width:610px;font-family:'Instrument Sans',sans-serif;font-size:30px;font-weight:400;color:#0D1B2A;line-height:1.3;">Point operations on the same scan: negative, contrast stretch, log, gamma, slicing.</p><x-embed data-build-in="fade order 1" style="position:absolute;left:804px;top:300px;width:690px;height:600px"><style>html,body{margin:0;background:transparent;overflow:hidden;font-family:system-ui,"Segoe UI",Arial,sans-serif}canvas{display:block}</style>
+<canvas id="c"></canvas>
+<script>
+const W=690,H=600,D=window.devicePixelRatio||1,c=document.getElementById("c");c.width=W*D;c.height=H*D;c.style.width=W+"px";c.style.height=H+"px";
+const x=c.getContext("2d");x.scale(D,D);
+const PW=296,PH=400,TW=37,TH=50,N=PW*PH;
+let sd=152;const rnd=()=>{sd|=0;sd=sd+0x6D2B79F5|0;let t=Math.imul(sd^sd>>>15,1|sd);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const src=new Float32Array(N);
+(function(){const ink=new Uint8Array(N);const bar=(x0,y0,w,h)=>{for(let j=y0;j<y0+h;j++)for(let i=x0;i<x0+w;i++)if(i>=0&&i<PW&&j>=0&&j<PH)ink[j*PW+i]=1};
+ bar(60,34,176,13);for(let r=0;r<12;r++){let px=22;const y=84+r*26;while(px<PW-30){const w=14+Math.floor(rnd()*46);if(px+w<PW-22)bar(px,y,w,7);px+=w+8+Math.floor(rnd()*6)}}
+ bar(12,12,PW-24,3);bar(12,PH-15,PW-24,3);bar(12,12,3,PH-24);bar(PW-15,12,3,PH-24);
+ for(let j=0;j<PH;j++)for(let i=0;i<PW;i++){let g=(i/PW+j/PH*1.3-1.2)/0.8;g=g<0?0:g>1?1:g;g=g*g*(3-2*g);const f=1-0.66*g;let v=ink[j*PW+i]?52:238;src[j*PW+i]=Math.max(0,Math.min(255,v*f+(rnd()-.5)*8))}})();
+const hist=a=>{const h=new Float64Array(256);for(let i=0;i<N;i++)h[a[i]|0]++;return h};
+const gHE=new Float32Array(N);{const h=hist(src),cd=new Float64Array(256);let s=0,mn=0;for(let i=0;i<256;i++){s+=h[i];cd[i]=s;if(!mn&&s)mn=s}for(let i=0;i<N;i++)gHE[i]=(cd[src[i]|0]-mn)/(N-mn)*255}
+const TX=8,TY=8,CLIP=2.2,lut=[];
+for(let ty=0;ty<TY;ty++)for(let tx=0;tx<TX;tx++){const h=new Float64Array(256);for(let j=ty*TH;j<(ty+1)*TH;j++)for(let i=tx*TW;i<(tx+1)*TW;i++)h[src[j*PW+i]|0]++;
+ const lim=Math.max(1,CLIP*TW*TH/256);let ex=0;for(let i=0;i<256;i++)if(h[i]>lim){ex+=h[i]-lim;h[i]=lim}const add=ex/256;let s=0;const l=new Float32Array(256);for(let i=0;i<256;i++){s+=h[i]+add;l[i]=s/(TW*TH)*255}lut.push(l)}
+const cla=new Float32Array(N);
+for(let j=0;j<PH;j++){const fy=(j+.5)/TH-.5,y0=Math.max(0,Math.floor(fy)),y1=Math.min(TY-1,y0+1),wy=Math.max(0,Math.min(1,fy-Math.floor(fy)));
+ for(let i=0;i<PW;i++){const fx=(i+.5)/TW-.5,x0=Math.max(0,Math.floor(fx)),x1=Math.min(TX-1,x0+1),wx=Math.max(0,Math.min(1,fx-Math.floor(fx))),v=src[j*PW+i]|0;
+  const a=lut[y0*TX+x0][v]*(1-wx)+lut[y0*TX+x1][v]*wx,b=lut[y1*TX+x0][v]*(1-wx)+lut[y1*TX+x1][v]*wx;cla[j*PW+i]=a*(1-wy)+b*wy}}
+const imgs=[src,gHE,cla].map(a=>{const o=document.createElement("canvas");o.width=PW;o.height=PH;const g=o.getContext("2d"),d=g.createImageData(PW,PH);for(let i=0;i<N;i++){const v=a[i];d.data[i*4]=d.data[i*4+1]=d.data[i*4+2]=v;d.data[i*4+3]=255}g.putImageData(d,0,0);return o});
+const B=64,H64=[src,gHE,cla].map(a=>{const h=new Float64Array(B);for(let i=0;i<N;i++)h[Math.min(B-1,(a[i]/4)|0)]++;const m=Math.max(...h);return h.map(v=>v/m)});
+const TT=[6,5],tl=(()=>{const h=new Float64Array(32);for(let j=TT[1]*TH;j<(TT[1]+1)*TH;j++)for(let i=TT[0]*TW;i<(TT[0]+1)*TW;i++)h[Math.min(31,(src[j*PW+i]/8)|0)]++;return h})();
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v)),sm=v=>{v=cl(v,0,1);return v*v*(3-2*v)};
+function T(s,t,col,sz){x.font="600 "+(sz||28)+"px ui-monospace,Consolas,monospace";x.fillStyle=col||"#0D1B2A";x.textBaseline="alphabetic";x.fillText(s,t[0],t[1])}
+function draw(t){
+ x.clearRect(0,0,W,H);
+ const w1=sm((t-2)/.4),w2=sm((t-5)/.5),wg=sm((t-4)/.8),ox=0,oy=70;
+ x.fillStyle="#fff";x.fillRect(ox,oy,PW,PH);
+ x.globalAlpha=1;x.drawImage(imgs[0],ox,oy);
+ const a1=w1*(1-w2);x.globalAlpha=w1;x.drawImage(imgs[1],ox,oy);x.globalAlpha=w2;x.drawImage(imgs[2],ox,oy);x.globalAlpha=1;
+ x.strokeStyle="#0D1B2A";x.lineWidth=2;x.strokeRect(ox+1,oy+1,PW-2,PH-2);
+ if(wg>0){x.strokeStyle="rgba(31,75,216,"+0.85*wg+")";x.lineWidth=1;x.beginPath();for(let i=1;i<8;i++){x.moveTo(ox+i*TW,oy);x.lineTo(ox+i*TW,oy+PH);x.moveTo(ox,oy+i*TH);x.lineTo(ox+PW,oy+i*TH)}x.stroke()}
+ if(t>=5){x.strokeStyle="#FFC72C";x.lineWidth=4;x.strokeRect(ox+TT[0]*TW,oy+TT[1]*TH,TW,TH)}
+ const st=t<2?0:t<5?1:2;
+ T(["Original","Global HE","CLAHE 2.2 · 8×8"][st],[0,42]);
+ if(st==1&&t>3){x.globalAlpha=sm((t-3)/.4);T("shadow lost",[PW+30,42],"#D62828",26);x.globalAlpha=1}
+ // histogram
+ const hx=340,hy=70,hw=350,hh=280;x.fillStyle="#fff";x.fillRect(hx,hy,hw,hh);x.strokeStyle="#0D1B2A";x.lineWidth=2;x.strokeRect(hx+1,hy+1,hw-2,hh-2);
+ const wts=[1-w1,w1*(1-w2),w2],mix=new Float64Array(B);for(let i=0;i<B;i++)mix[i]=wts[0]*H64[0][i]+wts[1]*H64[1][i]+wts[2]*H64[2][i];
+ const bw=(hw-24)/B;x.fillStyle="#0D1B2A";for(let i=0;i<B;i++){const v=mix[i]*(hh-40);x.fillRect(hx+12+i*bw,hy+hh-14-v,bw-1,v)}
+ x.strokeStyle="#1F4BD8";x.lineWidth=4;x.beginPath();let cs=0,tot=mix.reduce((a,b)=>a+b,0);for(let i=0;i<B;i++){cs+=mix[i];const px=hx+12+(i+1)*bw,py=hy+hh-14-cs/tot*(hh-40);i?x.lineTo(px,py):x.moveTo(px,py)}x.stroke();
+ T("histogram + CDF",[hx,hy+hh+30],"#5B6472",24);
+ // tile hist
+ const mx=340,my=410,mw=350,mh=120;
+ if(t>=4.6){x.globalAlpha=sm((t-4.6)/.5);x.fillStyle="#fff";x.fillRect(mx,my,mw,mh);x.strokeStyle="#FFC72C";x.lineWidth=4;x.strokeRect(mx+2,my+2,mw-4,mh-4);
+  const lim=CLIP*TW*TH/32,sc=(mh-20)/(lim*3.4),bwid=(mw-24)/32;
+  for(let i=0;i<32;i++){const v=tl[i],a=Math.min(v,lim)*sc,b=Math.min(v,lim*3.4)*sc;x.fillStyle="#C4CAD3";x.fillRect(mx+12+i*bwid,my+mh-8-b,bwid-1,b-a);x.fillStyle="#0D1B2A";x.fillRect(mx+12+i*bwid,my+mh-8-a,bwid-1,a)}
+  x.strokeStyle="#D62828";x.lineWidth=3;x.beginPath();x.moveTo(mx+8,my+mh-8-lim*sc);x.lineTo(mx+mw-8,my+mh-8-lim*sc);x.stroke();
+  T("one tile, clipped at 2.2×",[mx,my+mh+30],"#5B6472",24);x.globalAlpha=1}
+}
+const TQ=/[?&]t=([\d.]+)/.exec(location.search),S_=navigator.webdriver||matchMedia("(prefers-reduced-motion: reduce)").matches;
+if(TQ)draw(+TQ[1]);else if(S_)draw(7.4);else{const s=performance.now();(function f(n){draw(((n-s)/1000)%8.4);requestAnimationFrame(f)})(s)}
+</script></x-embed><div data-build-in="pop order 5" style="position:absolute;left:1524px;top:300px;width:268px;height:562px;background:#0D1B2A;border-radius:44px;padding:14px;box-shadow:0 24px 48px rgba(13,27,42,0.22);"><img src="asset:docs/screenshots/09_lab_fundamentals.png" alt="Pipeline Lab stage 1: colour, gray and quantised views of the scan" style="width:240px;height:534px;object-fit:cover;border-radius:32px"></div><p style="position:absolute;left:1524px;top:872px;width:268px;font-family:'DM Mono',monospace;font-size:24px;font-weight:500;color:#5B6472;line-height:1.25;letter-spacing:1px;">Pipeline Lab, stage 1 of 11</p><p style="position:absolute;left:128px;bottom:64px;width:1300px;font-family:'DM Mono',monospace;font-size:24px;letter-spacing:2px;color:#5B6472">AADIDEV RAIZADA · N152 · IMAGE &amp; VIDEO PROCESSING · NMIMS MPSTME</p><p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-family:'DM Mono',monospace;font-size:24px;color:#5B6472">08</p><aside>TIME: 45 seconds. Unit 2 point and histogram processing, Unit 1 quantisation.
+SAY: Next, the light. Global histogram equalisation uses one dimmer switch for the whole page. The white paper dominates the histogram, so the shadow stays dark and flat paper turns grainy.
+SAY: CLAHE uses 64 dimmer switches, an 8 by 8 grid of tiles, each with its own mapping. Each tile's histogram is clipped at 2.2 times the average bin, which caps how much noise it can amplify. Tiles are blended bilinearly so there are no seams.
+SAY: In the Lab, the same scan also goes through the textbook point operations: negative, contrast stretch, log, gamma and slicing, plus resolution and gray-level quantisation. The phone on the right is that Lab screen.
+CUE: the animation runs original, global equalisation, the tile grid, then CLAHE. The histogram and the clipped tile histogram are computed live from the page, not drawn by hand.
+BACK-POCKET: Why CLAHE and not global HE? Global HE builds one mapping from the whole-page histogram; CLAHE builds 64 clipped mappings, so a shadow in one corner does not wreck the rest.
+BACK-POCKET: The app's actual constants: clip 2.2, tiles 8 by 8, then a 3 by 3 median.</aside></section>

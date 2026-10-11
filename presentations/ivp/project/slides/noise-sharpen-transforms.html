@@ -1,0 +1,56 @@
+<section id="noise-sharpen-transforms" data-transition="fade" style="background:#F7F4EE;font-family:'Instrument Sans',sans-serif;color:#0D1B2A;display:flex;flex-direction:column;padding:128px 128px 160px;"><p style="position:absolute;left:128px;top:88px;width:1500px;font-family:'DM Mono',monospace;font-size:28px;font-weight:500;color:#1F4BD8;line-height:1.2;letter-spacing:4px;">SPATIAL · FREQUENCY · DCT</p><h1 style="position:absolute;left:128px;top:130px;width:1664px;font-family:'Bricolage Grotesque',sans-serif;font-size:100px;font-weight:800;color:#0D1B2A;line-height:1.04;letter-spacing:-1px;">Blur it to sharpen it</h1><div data-build-in="fade order 1" style="position:absolute;left:128px;top:340px;width:6px;height:108px;background:#1F4BD8;border-radius:3px;"></div><p data-build-in="rise order 1" style="position:absolute;left:156px;top:336px;width:680px;font-family:'Instrument Sans',sans-serif;font-size:30px;font-weight:400;color:#0D1B2A;line-height:1.3;"><b>Median 3×3.</b> Removes the speckle CLAHE lifts and keeps stroke edges.</p><div data-build-in="fade order 2" style="position:absolute;left:128px;top:478px;width:6px;height:108px;background:#FFC72C;border-radius:3px;"></div><p data-build-in="rise order 2" style="position:absolute;left:156px;top:474px;width:680px;font-family:'Instrument Sans',sans-serif;font-size:30px;font-weight:400;color:#0D1B2A;line-height:1.3;"><b>Unsharp mask.</b> out = I + (a − 1)(I − Gσ I). Auto σ 1.05, a 1.32. Clean σ 1.35, a 1.50.</p><div data-build-in="fade order 3" style="position:absolute;left:128px;top:616px;width:6px;height:108px;background:#1F4BD8;border-radius:3px;"></div><p data-build-in="rise order 3" style="position:absolute;left:156px;top:612px;width:680px;font-family:'Instrument Sans',sans-serif;font-size:30px;font-weight:400;color:#0D1B2A;line-height:1.3;"><b>DFT spectrum + low-pass.</b> Shows what smoothing removes.</p><div data-build-in="fade order 4" style="position:absolute;left:128px;top:754px;width:6px;height:108px;background:#FFC72C;border-radius:3px;"></div><p data-build-in="rise order 4" style="position:absolute;left:156px;top:750px;width:680px;font-family:'Instrument Sans',sans-serif;font-size:30px;font-weight:400;color:#0D1B2A;line-height:1.3;"><b>8×8 DCT.</b> Every saved preview is JPEG at quality 88.</p><x-embed data-build-in="fade order 2" style="position:absolute;left:880px;top:322px;width:912px;height:260px"><style>html,body{margin:0;background:transparent;overflow:hidden}canvas{display:block}</style>
+<canvas id="c"></canvas>
+<script>
+const W=912,H=260,D=window.devicePixelRatio||1,c=document.getElementById("c");c.width=W*D;c.height=H*D;c.style.width=W+"px";c.style.height=H+"px";
+const x=c.getContext("2d");x.scale(D,D);
+const n=300,I=[],G=[],S=[],sg=26;
+for(let i=0;i<n;i++){const u=(i-150)/6;I.push(0.18+0.64/(1+Math.exp(-u)))}
+const k=[];let ks=0;for(let j=-80;j<=80;j++){const v=Math.exp(-j*j/(2*sg*sg));k.push(v);ks+=v}
+for(let i=0;i<n;i++){let s=0;for(let j=-80;j<=80;j++){const q=Math.min(n-1,Math.max(0,i+j));s+=I[q]*k[j+80]}G.push(s/ks)}
+for(let i=0;i<n;i++)S.push(I[i]+0.32*(I[i]-G[i]));
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v)),px=i=>20+i*(520/n),py=v=>235-v*205;
+function line(a,col,w,p,dash){x.strokeStyle=col;x.lineWidth=w;x.setLineDash(dash||[]);x.lineCap="round";x.beginPath();const m=Math.floor(n*p);for(let i=0;i<m;i++){i?x.lineTo(px(i),py(a[i])):x.moveTo(px(i),py(a[i]))}x.stroke();x.setLineDash([])}
+function draw(t){x.clearRect(0,0,W,H);
+ x.strokeStyle="#0D1B2A";x.lineWidth=2;x.beginPath();x.moveTo(20,18);x.lineTo(20,238);x.lineTo(548,238);x.stroke();
+ line(I,"#8F98A6",5,cl(t/.8,0,1));line(G,"#1F4BD8",5,cl((t-.8)/1,0,1),[2,10]);line(S,"#0D1B2A",6,cl((t-1.8)/1.2,0,1));
+ const L=[["I","#8F98A6",0],["Gσ I","#1F4BD8",.8],["sharpened","#0D1B2A",1.8]];
+ L.forEach((l,i)=>{const a=cl((t-l[2])/.3,0,1);x.globalAlpha=a;x.fillStyle=l[1];x.fillRect(590,34+i*44,44,8);x.fillStyle="#0D1B2A";x.font="600 26px system-ui,Segoe UI,Arial";x.textBaseline="middle";x.fillText(l[0],650,38+i*44);x.globalAlpha=1});
+ x.globalAlpha=cl((t-2.6)/.4,0,1);x.fillStyle="#1F4BD8";x.font="600 26px ui-monospace,Consolas,monospace";x.textBaseline="alphabetic";x.fillText("I + 0.32 (I − Gσ I)",590,200);x.fillStyle="#5B6472";x.fillText("σ 1.05, a 1.32",590,238);x.globalAlpha=1}
+const TQ=/[?&]t=([\d.]+)/.exec(location.search),S_=navigator.webdriver||matchMedia("(prefers-reduced-motion: reduce)").matches;
+if(TQ)draw(+TQ[1]);else if(S_)draw(4);else{const s=performance.now();(function f(n_){draw(((n_-s)/1000)%5.5);requestAnimationFrame(f)})(s)}
+</script></x-embed><x-embed data-build-in="fade order 4" style="position:absolute;left:880px;top:594px;width:912px;height:326px"><style>html,body{margin:0;background:transparent;overflow:hidden}canvas{display:block}</style>
+<canvas id="c"></canvas>
+<script>
+const W=912,H=326,D=window.devicePixelRatio||1,c=document.getElementById("c");c.width=W*D;c.height=H*D;c.style.width=W+"px";c.style.height=H+"px";
+const x=c.getContext("2d");x.scale(D,D);
+const f=[];let sd=7;const r=()=>{sd=(sd*1103515245+12345)&0x7fffffff;return sd/0x7fffffff};
+for(let j=0;j<8;j++){f.push([]);for(let i=0;i<8;i++){let v=215;if(i>=3&&i<=4)v=45;if(j>=5&&j<=6&&i>=3)v=45;f[j].push(Math.max(0,Math.min(255,v+(r()-.5)*10)))}}
+const cu=u=>u?1:Math.SQRT1_2,F=[];
+for(let v=0;v<8;v++){F.push([]);for(let u=0;u<8;u++){let s=0;for(let j=0;j<8;j++)for(let i=0;i<8;i++)s+=(f[j][i]-128)*Math.cos((2*i+1)*u*Math.PI/16)*Math.cos((2*j+1)*v*Math.PI/16);F[v].push(s*cu(u)*cu(v)/4)}}
+const Z=[];for(let s=0;s<15;s++){const a=[];for(let j=0;j<8;j++){const i=s-j;if(i>=0&&i<8)a.push([i,j])}if(s%2==0)a.reverse();Z.push(...a)}
+let mxc=0;for(const[u,v]of Z)if(u+v)mxc=Math.max(mxc,Math.abs(F[v][u]));
+const ord={};Z.forEach((p,i)=>ord[p[0]+","+p[1]]=i);
+function recon(k){const o=[];for(let j=0;j<8;j++){o.push([]);for(let i=0;i<8;i++){let s=0;for(let v=0;v<8;v++)for(let u=0;u<8;u++){if(ord[u+","+v]<k)s+=cu(u)*cu(v)*F[v][u]*Math.cos((2*i+1)*u*Math.PI/16)*Math.cos((2*j+1)*v*Math.PI/16)}o[j].push(Math.max(0,Math.min(255,s/4+128)))}}return o}
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v)),C=30,Y=44,X0=[0,336,672];
+function grid(ox,fn){for(let j=0;j<8;j++)for(let i=0;i<8;i++){x.fillStyle=fn(i,j);x.fillRect(ox+i*C,Y+j*C,C-1,C-1)}}
+function tx(s,xx,yy,col){x.font="600 24px ui-monospace,Consolas,monospace";x.fillStyle=col||"#0D1B2A";x.textBaseline="alphabetic";x.fillText(s,xx,yy)}
+function draw(t){x.clearRect(0,0,W,H);
+ const kk=Math.round(cl(64-(64-6)*cl((t-1)/3.6,0,1),6,64)),R=recon(kk);
+ grid(X0[0],(i,j)=>{const g=f[j][i]|0;return"rgb("+g+","+g+","+g+")"});
+ grid(X0[1],(i,j)=>{const o=ord[i+","+j];if(o>=kk)return"#E9E3D6";const a=i+j?Math.sqrt(Math.abs(F[j][i])/mxc):1;return"rgba(31,75,216,"+(0.18+0.82*a)+")"});
+ grid(X0[2],(i,j)=>{const g=R[j][i]|0;return"rgb("+g+","+g+","+g+")"});
+ x.strokeStyle="#FFC72C";x.lineWidth=4;x.lineJoin="round";x.beginPath();let m=0;for(let q=0;q<Math.min(kk,64);q++){const[u,v]=Z[q],px=X0[1]+u*C+C/2,py=Y+v*C+C/2;q?x.lineTo(px,py):x.moveTo(px,py)}x.stroke();
+ let mse=0;for(let j=0;j<8;j++)for(let i=0;i<8;i++)mse+=Math.pow(f[j][i]-R[j][i],2);mse/=64;
+ tx("8×8 block",X0[0],28);tx("DCT, zig-zag",X0[1],28);tx("keep "+kk+" of 64",X0[2],28);
+ tx(kk==64?"lossless":"PSNR "+(10*Math.log10(65025/mse)).toFixed(1)+" dB",X0[2],Y+8*C+30,"#1F4BD8");
+ x.fillStyle="#5B6472";x.font="700 40px system-ui,Arial";x.textBaseline="middle";x.fillText("→",X0[0]+C*8+8,Y+4*C);x.fillText("→",X0[1]+C*8+8,Y+4*C)}
+const TQ=/[?&]t=([\d.]+)/.exec(location.search),S_=navigator.webdriver||matchMedia("(prefers-reduced-motion: reduce)").matches;
+if(TQ)draw(+TQ[1]);else if(S_)draw(5);else{const s=performance.now();(function fr(n){draw(((n-s)/1000)%6.5);requestAnimationFrame(fr)})(s)}
+</script></x-embed><p style="position:absolute;left:128px;bottom:64px;width:1300px;font-family:'DM Mono',monospace;font-size:24px;letter-spacing:2px;color:#5B6472">AADIDEV RAIZADA · N152 · IMAGE &amp; VIDEO PROCESSING · NMIMS MPSTME</p><p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-family:'DM Mono',monospace;font-size:24px;color:#5B6472">09</p><aside>TIME: 45 seconds. Unit 2 neighbourhood processing, Unit 3 transforms.
+SAY: Here is a paradox: to sharpen, we blur. Subtract a Gaussian-blurred copy from the image and what is left is the edge detail. Add a fraction of it back, 32 percent in Auto, 50 percent in Clean. The top curve is that equation on a single edge.
+SAY: Before that, a 3 by 3 median removes the speckle that CLAHE lifted. A median ignores outliers; a Gaussian would smear them.
+SAY: The Lab shows the same story in frequency: the DFT spectrum of the page, and a low-pass filter that removes exactly the high frequencies the text lives in.
+SAY: And Unit 3 is in production too: every stored preview is JPEG at quality 88, 8 by 8 DCT blocks. The bottom animation keeps fewer and fewer DCT coefficients of a letter-edge block, in zig-zag order, and reports PSNR live. Text is the hard case: strokes need high frequencies.
+BACK-POCKET: Why not filter in the frequency domain in the app? For a 3 by 3 or 5 by 5 kernel, direct convolution is cheaper than an FFT round trip; the convolution theorem says the result is the same.
+BACK-POCKET: Energy compaction: for smooth blocks the DCT puts most energy into a few low-frequency coefficients; text has real high-frequency energy, so aggressive quantisation causes ringing around characters.
+BACK-POCKET: Median versus Gaussian for salt-and-pepper noise: median, because outliers never get output while fewer than half the window is corrupted.</aside></section>

@@ -1,0 +1,45 @@
+<section id="find-the-page" data-transition="fade" style="background:#F7F4EE;font-family:'Instrument Sans',sans-serif;color:#0D1B2A;display:flex;flex-direction:column;padding:128px 128px 160px;"><p style="position:absolute;left:128px;top:88px;width:1500px;font-family:'DM Mono',monospace;font-size:28px;font-weight:500;color:#1F4BD8;line-height:1.2;letter-spacing:4px;">EDGES · MORPHOLOGY · GEOMETRY</p><h1 style="position:absolute;left:128px;top:130px;width:1664px;font-family:'Bricolage Grotesque',sans-serif;font-size:84px;font-weight:800;color:#0D1B2A;line-height:1.04;letter-spacing:-1px;">Canny + closing + 4 corners<br>= a flat page</h1><div data-build-in="pop order 2" style="position:absolute;left:127px;top:385px;width:46px;height:46px;background:#1F4BD8;border-radius:23px;align-items:center;justify-content:center;border:3px solid #F7F4EE;"><p style="font-family:'DM Mono',monospace;font-size:26px;font-weight:500;color:#fff;line-height:1;">1</p></div><p data-build-in="rise order 2" style="position:absolute;left:204px;top:384px;width:700px;font-family:'Instrument Sans',sans-serif;font-size:30px;font-weight:500;color:#0D1B2A;line-height:1.25;">Gaussian 5×5 → Canny, hysteresis 55 / 170</p><div data-build-in="pop order 3" style="position:absolute;left:127px;top:507px;width:46px;height:46px;background:#1F4BD8;border-radius:23px;align-items:center;justify-content:center;border:3px solid #F7F4EE;"><p style="font-family:'DM Mono',monospace;font-size:26px;font-weight:500;color:#fff;line-height:1;">2</p></div><p data-build-in="rise order 3" style="position:absolute;left:204px;top:506px;width:700px;font-family:'Instrument Sans',sans-serif;font-size:30px;font-weight:500;color:#0D1B2A;line-height:1.25;">Close 5×5: dilate, then erode. Bridges broken border edges</p><div data-build-in="pop order 4" style="position:absolute;left:127px;top:629px;width:46px;height:46px;background:#1F4BD8;border-radius:23px;align-items:center;justify-content:center;border:3px solid #F7F4EE;"><p style="font-family:'DM Mono',monospace;font-size:26px;font-weight:500;color:#fff;line-height:1;">3</p></div><p data-build-in="rise order 4" style="position:absolute;left:204px;top:628px;width:700px;font-family:'Instrument Sans',sans-serif;font-size:30px;font-weight:500;color:#0D1B2A;line-height:1.25;">Contours → approxPolyDP (ε = 2 % of perimeter) → convex quad ≥ 15 % of frame</p><div data-build-in="pop order 5" style="position:absolute;left:127px;top:751px;width:46px;height:46px;background:#1F4BD8;border-radius:23px;align-items:center;justify-content:center;border:3px solid #F7F4EE;"><p style="font-family:'DM Mono',monospace;font-size:26px;font-weight:500;color:#fff;line-height:1;">4</p></div><p data-build-in="rise order 5" style="position:absolute;left:204px;top:750px;width:700px;font-family:'Instrument Sans',sans-serif;font-size:30px;font-weight:500;color:#0D1B2A;line-height:1.25;">Homography from 4 corners (8 equations) → bicubic warp, size = longest opposite edges</p><x-embed data-build-in="fade order 1" style="position:absolute;left:960px;top:352px;width:832px;height:560px"><style>html,body{margin:0;background:transparent;overflow:hidden;font-family:system-ui,"Segoe UI",Arial,sans-serif}canvas{display:block}</style>
+<canvas id="c"></canvas>
+<script>
+const W=832,H=560,D=window.devicePixelRatio||1,c=document.getElementById("c");c.width=W*D;c.height=H*D;c.style.width=W+"px";c.style.height=H+"px";
+const x=c.getContext("2d");x.scale(D,D);
+const S=[[262,92],[604,128],[648,478],[176,506]],R=[[252,74],[582,74],[582,514],[252,514]];
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v)),ea=v=>v<.5?2*v*v:1-Math.pow(-2*v+2,2)/2;
+const BARS=[[.12,.14,.76,.045],[.12,.26,.5,.025],[.12,.33,.76,.025],[.12,.40,.68,.025],[.12,.47,.76,.025],[.12,.54,.6,.025],[.12,.61,.72,.025],[.12,.68,.45,.025],[.12,.80,.3,.025],[.58,.80,.3,.025]];
+function mp(P,u,v){const a=1-u,b=1-v;return[P[0][0]*a*b+P[1][0]*u*b+P[2][0]*u*v+P[3][0]*a*v,P[0][1]*a*b+P[1][1]*u*b+P[2][1]*u*v+P[3][1]*a*v]}
+function quad(P,col){x.beginPath();P.forEach((q,i)=>i?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1]));x.closePath();x.fillStyle=col;x.fill()}
+function lab(txt,ok){x.font="600 28px ui-monospace,Consolas,monospace";const w=x.measureText(txt).width+36+(ok?44:0);x.fillStyle="#0D1B2A";x.beginPath();x.roundRect(16,14,w,46,23);x.fill();x.fillStyle="#fff";x.textBaseline="middle";x.fillText(txt,34,38);
+ if(ok){x.fillStyle="#1F4BD8";x.beginPath();x.arc(16+w-30,37,16,0,7);x.fill();x.strokeStyle="#fff";x.lineWidth=4;x.lineCap="round";x.beginPath();x.moveTo(16+w-38,37);x.lineTo(16+w-31,44);x.lineTo(16+w-21,30);x.stroke()}}
+let SC=1;
+function bg(){x.clearRect(0,0,W,H);x.fillStyle="#E9E3D6";x.beginPath();x.roundRect(0,0,W,H,28);x.fill()}
+function core(t){
+ const k=ea(cl((t-3.6)/1.6,0,1)),P=S.map((q,i)=>[q[0]+(R[i][0]-q[0])*k,q[1]+(R[i][1]-q[1])*k]);
+ let pa=1;if(t>=1)pa=1-0.8*cl((t-1)/.4,0,1);if(t>=3.6)pa=0.2+0.8*cl((t-3.6)/.6,0,1);
+ x.save();x.shadowColor="rgba(13,27,42,"+0.28*pa+")";x.shadowBlur=26;x.shadowOffsetY=10;quad(P,"rgba(255,255,255,"+pa+")");x.restore();
+ x.save();x.globalAlpha=pa;BARS.forEach((b,i)=>{const[u,v,w,h]=b;quad([mp(P,u,v),mp(P,u+w,v),mp(P,u+w,v+h),mp(P,u,v+h)],i==0?"#1F4BD8":"#8F98A6")});x.restore();
+ // outline
+ const GAPS={0:[.35,.5],1:[.6,.72],3:[.15,.28]},g=cl((t-2)/.8,0,1),oa=t<3.8?1:1-cl((t-3.8)/1.2,0,1);
+ if(t>=1&&oa>0){x.save();x.globalAlpha=oa*cl((t-1)/.25,0,1);x.strokeStyle="#0D1B2A";x.lineCap="round";
+  for(let e=0;e<4;e++){const A=P[e],B=P[(e+1)%4],gp=GAPS[e],seg=(a,b,w)=>{x.lineWidth=w;x.beginPath();x.moveTo(A[0]+(B[0]-A[0])*a,A[1]+(B[1]-A[1])*a);x.lineTo(A[0]+(B[0]-A[0])*b,A[1]+(B[1]-A[1])*b);x.stroke()};
+   if(!gp)seg(0,1,3+3*Math.sin(Math.PI*g));else{seg(0,gp[0],3+3*Math.sin(Math.PI*g));seg(gp[1],1,3+3*Math.sin(Math.PI*g));if(g>0)seg(gp[0],gp[0]+(gp[1]-gp[0])*g,3+3*Math.sin(Math.PI*g))}}x.restore()}
+ // corners
+ const cf=1-cl((t-5.2)/.5,0,1);
+ for(let i=0;i<4;i++){const s=ea(cl((t-2.8-i*.2)/.25,0,1))*cf;if(s>0){x.fillStyle="#D62828";x.beginPath();x.arc(P[i][0],P[i][1],(SC<1?26:19)*s,0,7);x.fill();x.fillStyle="#fff";x.font="700 "+(24/SC)+"px system-ui,Arial";x.textAlign="center";x.textBaseline="middle";x.globalAlpha=s;x.fillText(i+1,P[i][0],P[i][1]+1);x.globalAlpha=1;x.textAlign="left"}}
+}
+function draw(t){bg();core(t);x.textAlign="left";
+ if(t<1)lab("Phone photo");else if(t<2)lab("Canny edges");else if(t<2.8)lab("Close 500d75");else if(t<3.6)lab("Four corners");else if(t<5.2)lab("warpPerspective");else lab("Page borders found and aligned",1);
+}
+function cap(t,cx,y){x.font="600 26px ui-monospace,Consolas,monospace";x.fillStyle="#0D1B2A";x.textAlign="center";x.textBaseline="alphabetic";x.fillText(t,cx,y);x.textAlign="left"}
+function still(){bg();SC=.7;x.save();x.translate(-93,94);x.scale(.7,.7);core(3.6);x.restore();x.save();x.translate(349,94);x.scale(.7,.7);core(6.3);x.restore();SC=1;
+ x.strokeStyle="#1F4BD8";x.lineWidth=6;x.lineCap="round";x.lineJoin="round";x.beginPath();x.moveTo(392,300);x.lineTo(440,300);x.moveTo(424,282);x.lineTo(442,300);x.lineTo(424,318);x.stroke();
+ cap("Edges, close, 4 corners",195,520);cap("warpPerspective",637,520);lab("Page borders found and aligned",1)}
+const TQ=/[?&]t=([\d.]+)/.exec(location.search),S_=navigator.webdriver||matchMedia("(prefers-reduced-motion: reduce)").matches;
+if(TQ)draw(+TQ[1]);else if(S_)still();else{const s=performance.now();(function f(n){draw(((n-s)/1000)%7.2);requestAnimationFrame(f)})(s)}
+</script></x-embed><p style="position:absolute;left:128px;bottom:64px;width:1300px;font-family:'DM Mono',monospace;font-size:24px;letter-spacing:2px;color:#5B6472">AADIDEV RAIZADA · N152 · IMAGE &amp; VIDEO PROCESSING · NMIMS MPSTME</p><p style="position:absolute;right:128px;bottom:64px;width:120px;text-align:right;font-family:'DM Mono',monospace;font-size:24px;color:#5B6472">07</p><aside>TIME: 50 seconds. Units 1, 4, 5, 6.
+SAY: Step one, find the page. A 5 by 5 Gaussian removes paper grain, then Canny. The high threshold, 170, only starts edges on strong contrast like the page border; hysteresis lets them continue down to 55 through the shadow.
+SAY: Canny edges still break. A 5 by 5 closing, dilation then erosion, bridges those breaks, so the contour is closed.
+SAY: Contours are simplified to polygons; I keep the largest convex four-sided one covering at least 15 percent of the frame.
+SAY: Four corners give eight equations, exactly the eight unknowns of a homography. warpPerspective does the rest.
+CUE: the animation walks through the numbered lines: edges, gaps closing, four corners, warp. It ends on the app's status text, 'Page borders found and aligned'.
+BACK-POCKET: If no quad is found, the app keeps the whole image and the user can crop manually in the crop editor.
+BACK-POCKET: Corner ordering uses x+y and y-x; it can confuse corners on a page rotated near 45 degrees, which is in my limitations.</aside></section>

@@ -1,0 +1,55 @@
+{
+ "v": 4,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-10-12T00:00:00Z"
+ },
+ "lists": "css",
+ "title": "NavCert Offline — Image & Video Processing",
+ "order": [
+  "title",
+  "hook-four-defects",
+  "problem",
+  "big-idea",
+  "pipeline",
+  "syllabus-route",
+  "find-the-page",
+  "fix-the-light",
+  "noise-sharpen-transforms",
+  "segment-and-colour",
+  "steady-capture",
+  "evidence",
+  "live-demo",
+  "limits-and-next",
+  "close-qna"
+ ],
+ "sections": {
+  "s1": {
+   "description": "Hook, problem and idea: a crooked phone photo and why classical image processing comes first.",
+   "start": "title"
+  },
+  "s2": {
+   "description": "The pipeline mapped onto the syllabus, unit by unit, with each stage animated.",
+   "start": "pipeline"
+  },
+  "s3": {
+   "description": "Measured evidence, a look at the real app, limitations and close.",
+   "start": "evidence"
+  }
+ },
+ "faces": {
+  "bricolage-grotesque": {
+   "family": "Bricolage Grotesque",
+   "href": "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400..800&display=swap"
+  },
+  "instrument-sans": {
+   "family": "Instrument Sans",
+   "href": "https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&display=swap"
+  },
+  "dm-mono": {
+   "family": "DM Mono",
+   "href": "https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap"
+  }
+ },
+ "designSystems": []
+}

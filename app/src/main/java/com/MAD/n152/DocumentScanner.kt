@@ -95,7 +95,7 @@ object DocumentScanner {
         }
     }
 
-    private fun detectCorners(rgba: Mat): Array<Point>? {
+    internal fun detectCorners(rgba: Mat): Array<Point>? {
         val gray = Mat()
         val blurred = Mat()
         val edges = Mat()
@@ -157,7 +157,7 @@ object DocumentScanner {
         }
     }
 
-    private fun measureQuality(rgba: Mat): ImageQuality {
+    internal fun measureQuality(rgba: Mat): ImageQuality {
         val gray = Mat()
         val laplacian = Mat()
         val mean = MatOfDouble()
@@ -192,7 +192,7 @@ object DocumentScanner {
         }
     }
 
-    private fun enhanceForOcr(source: Mat, mode: EnhancementMode): Mat {
+    internal fun enhanceForOcr(source: Mat, mode: EnhancementMode): Mat {
         val gray = Mat()
         val contrast = Mat()
         val denoised = Mat()
@@ -256,7 +256,7 @@ object DocumentScanner {
         }
     }
 
-    private fun warpPerspective(source: Mat, corners: Array<Point>): Mat {
+    internal fun warpPerspective(source: Mat, corners: Array<Point>): Mat {
         val topWidth = distance(corners[0], corners[1])
         val bottomWidth = distance(corners[3], corners[2])
         val leftHeight = distance(corners[0], corners[3])

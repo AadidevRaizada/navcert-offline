@@ -38,6 +38,7 @@ import androidx.compose.material.icons.outlined.FormatClear
 import androidx.compose.material.icons.outlined.FormatListNumbered
 import androidx.compose.material.icons.outlined.Highlight
 import androidx.compose.material.icons.outlined.Save
+import androidx.compose.material.icons.outlined.Science
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
@@ -94,7 +95,8 @@ fun CaptureScreen(
     status: String,
     onModeChange: (RecognitionMode) -> Unit,
     onTakePhoto: () -> Unit,
-    onImportImage: () -> Unit
+    onImportImage: () -> Unit,
+    onOpenLab: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -147,6 +149,11 @@ fun CaptureScreen(
             Icon(Icons.Outlined.Image, contentDescription = null)
             Spacer(Modifier.size(10.dp))
             Text("Choose an image")
+        }
+        TextButton(onClick = onOpenLab, modifier = Modifier.padding(top = 4.dp)) {
+            Icon(Icons.Outlined.Science, contentDescription = null)
+            Spacer(Modifier.size(8.dp))
+            Text("See the image pipeline, stage by stage")
         }
         Spacer(Modifier.weight(0.65f))
         Text(
@@ -389,7 +396,8 @@ fun ExtractedDocumentScreen(
     onSave: () -> Unit,
     onCopy: () -> Unit,
     onShare: () -> Unit,
-    onNewScan: () -> Unit
+    onNewScan: () -> Unit,
+    onOpenLab: () -> Unit = {}
 ) {
     var toolsExpanded by rememberSaveable { mutableStateOf(true) }
     var showScanImage by rememberSaveable { mutableStateOf(false) }
@@ -408,7 +416,7 @@ fun ExtractedDocumentScreen(
                 if (toolsExpanded) {
                     DocumentTools(
                         text, activeDocumentId, stats, status, isSaving, reviewNotes,
-                        onReviewNotesChange, onSave, onCopy, onShare, onNewScan,
+                        onReviewNotesChange, onSave, onCopy, onShare, onNewScan, onOpenLab,
                         { toolsExpanded = false },
                         Modifier.weight(3f).widthIn(min = 280.dp).verticalScroll(rememberScrollState())
                     )
@@ -429,7 +437,7 @@ fun ExtractedDocumentScreen(
                 if (toolsExpanded) {
                     DocumentTools(
                         text, activeDocumentId, stats, status, isSaving, reviewNotes,
-                        onReviewNotesChange, onSave, onCopy, onShare, onNewScan,
+                        onReviewNotesChange, onSave, onCopy, onShare, onNewScan, onOpenLab,
                         { toolsExpanded = false }
                     )
                 }
@@ -725,6 +733,7 @@ private fun DocumentTools(
     onCopy: () -> Unit,
     onShare: () -> Unit,
     onNewScan: () -> Unit,
+    onOpenLab: () -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -776,6 +785,11 @@ private fun DocumentTools(
                 Spacer(Modifier.size(7.dp))
                 Text("Share")
             }
+        }
+        OutlinedButton(onClick = onOpenLab, modifier = Modifier.fillMaxWidth()) {
+            Icon(Icons.Outlined.Science, contentDescription = null)
+            Spacer(Modifier.size(7.dp))
+            Text("Open Pipeline Lab for this page")
         }
         Text(
             status,

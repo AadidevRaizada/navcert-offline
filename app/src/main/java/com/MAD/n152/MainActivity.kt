@@ -30,6 +30,7 @@ import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.outlined.Science
 import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -87,6 +88,7 @@ enum class AppDestination(val label: String) {
     SCAN("Scan"),
     DOCUMENTS("Documents"),
     ASSISTANT("Ask"),
+    LAB("Pipeline Lab"),
     ABOUT("About")
 }
 
@@ -104,6 +106,7 @@ fun OcrApp() {
     }
 
     var destination by rememberSaveable { mutableStateOf(AppDestination.SCAN) }
+    var labReturnDestination by rememberSaveable { mutableStateOf(AppDestination.SCAN) }
     var scanStep by rememberSaveable { mutableStateOf(ScanStep.CAPTURE) }
     var recognitionMode by rememberSaveable { mutableStateOf(RecognitionMode.AUTO) }
     var enhancementMode by rememberSaveable { mutableStateOf(EnhancementMode.AUTO) }
@@ -162,6 +165,7 @@ fun OcrApp() {
     }
 
     fun navigate(target: AppDestination) {
+        if (target == AppDestination.LAB && destination != AppDestination.LAB) labReturnDestination = destination
         destination = target
         scope.launch { drawerState.close() }
     }
@@ -435,6 +439,9 @@ fun OcrApp() {
             else -> ScanStep.CAPTURE
         }
     }
+    BackHandler(enabled = destination == AppDestination.LAB) {
+        destination = labReturnDestination
+    }
 
     val appContent: @Composable (showMenu: Boolean) -> Unit = { showMenu ->
         Scaffold(
@@ -461,6 +468,7 @@ fun OcrApp() {
                                     }
                                     AppDestination.DOCUMENTS -> "Stored on this phone"
                                     AppDestination.ASSISTANT -> "Answers from your saved documents"
+                                    AppDestination.LAB -> "Image processing, stage by stage"
                                     AppDestination.ABOUT -> "Private by design"
                                 },
                                 style = MaterialTheme.typography.labelMedium,
@@ -514,7 +522,8 @@ fun OcrApp() {
                             onImportImage = {
                                 sourceType = "gallery"
                                 galleryLauncher.launch("image/*")
-                            }
+                            },
+                            onOpenLab = { navigate(AppDestination.LAB) }
                         )
 
                         ScanStep.PREVIEW -> DocumentPreviewScreen(
@@ -583,7 +592,8 @@ fun OcrApp() {
                                 status = "Document copied"
                             },
                             onShare = { shareText(context, extractedText) },
-                            onNewScan = ::newScan
+                            onNewScan = ::newScan,
+                            onOpenLab = { navigate(AppDestination.LAB) }
                         )
                     }
 
@@ -623,6 +633,8 @@ fun OcrApp() {
                         onOpenDocument = { id -> documents.firstOrNull { it.id == id }?.let(::openDocument) }
                     )
 
+                    AppDestination.LAB -> PipelineLabScreen(currentScan = sourceBitmap ?: previewBitmap)
+
                     AppDestination.ABOUT -> AboutScreen()
                 }
             }
@@ -659,7 +671,7 @@ private fun DrawerContent(
 ) {
     Column(modifier = Modifier.padding(horizontal = 12.dp)) {
         Text(
-            "N152",
+            "NavCert Offline",
             modifier = Modifier.padding(start = 16.dp, top = 28.dp),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold
@@ -688,6 +700,12 @@ private fun DrawerContent(
             selected = selected == AppDestination.ASSISTANT,
             icon = { Icon(Icons.Outlined.ChatBubbleOutline, contentDescription = null) },
             onClick = { onNavigate(AppDestination.ASSISTANT) }
+        )
+        NavigationDrawerItem(
+            label = { Text("Pipeline Lab") },
+            selected = selected == AppDestination.LAB,
+            icon = { Icon(Icons.Outlined.Science, contentDescription = null) },
+            onClick = { onNavigate(AppDestination.LAB) }
         )
         NavigationDrawerItem(
             label = { Text("About") },

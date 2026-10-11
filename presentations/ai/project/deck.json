@@ -1,0 +1,55 @@
+{
+ "v": 4,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-10-12T00:00:00Z"
+ },
+ "lists": "css",
+ "title": "NavCert Offline — Artificial Intelligence",
+ "order": [
+  "title",
+  "hook",
+  "why",
+  "agent",
+  "perception",
+  "expert",
+  "search",
+  "csp",
+  "learning",
+  "trees",
+  "qa",
+  "eval",
+  "ethics",
+  "future",
+  "close"
+ ],
+ "sections": {
+  "s1": {
+   "description": "The project as a rational agent: problem, privacy and perception.",
+   "start": "title"
+  },
+  "s2": {
+   "description": "AI methods in NavCert: expert system, search, CSP, learning and transformers.",
+   "start": "agent"
+  },
+  "s3": {
+   "description": "Honest evaluation, responsible AI, future work and close.",
+   "start": "eval"
+  }
+ },
+ "faces": {
+  "bricolage-grotesque": {
+   "family": "Bricolage Grotesque",
+   "href": "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400..800&display=swap"
+  },
+  "instrument-sans": {
+   "family": "Instrument Sans",
+   "href": "https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&display=swap"
+  },
+  "dm-mono": {
+   "family": "DM Mono",
+   "href": "https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap"
+  }
+ },
+ "designSystems": []
+}

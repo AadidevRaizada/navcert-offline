@@ -1,0 +1,29 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Local tooling and caches
+.kotlin/
+.firecrawl/
+.agents/
+skills-lock.json
+__pycache__/
+*.pyc
+
+# ML: private certificate corpus, venv and large checkpoints stay local
+ml/.venv/
+ml/data/
+ml/models/
+tmp/

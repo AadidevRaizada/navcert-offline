@@ -1,0 +1,62 @@
+{
+ "v": 4,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-10-12T00:00:00Z"
+ },
+ "lists": "css",
+ "title": "NavCert Offline — Mobile Application Development",
+ "order": [
+  "title",
+  "problem",
+  "users",
+  "solution",
+  "architecture",
+  "tour-scan",
+  "tour-fields",
+  "tour-ask",
+  "concepts",
+  "standards",
+  "testing",
+  "contribution",
+  "demo",
+  "close"
+ ],
+ "sections": {
+  "s0": {
+   "description": "Title.",
+   "start": "title"
+  },
+  "s1": {
+   "description": "The problem and who has it.",
+   "start": "problem"
+  },
+  "s2": {
+   "description": "The app, its architecture and a feature tour.",
+   "start": "solution"
+  },
+  "s3": {
+   "description": "New concepts, standards and testing.",
+   "start": "concepts"
+  },
+  "s4": {
+   "description": "Individual contribution, demo and next steps.",
+   "start": "contribution"
+  }
+ },
+ "faces": {
+  "bricolage-grotesque": {
+   "family": "Bricolage Grotesque",
+   "href": "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400..800&display=swap"
+  },
+  "instrument-sans": {
+   "family": "Instrument Sans",
+   "href": "https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&display=swap"
+  },
+  "dm-mono": {
+   "family": "DM Mono",
+   "href": "https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap"
+  }
+ },
+ "designSystems": []
+}

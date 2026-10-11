@@ -30,6 +30,7 @@ import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.outlined.PrivacyTip
 import androidx.compose.material.icons.outlined.Science
 import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material3.DrawerValue
@@ -89,6 +90,7 @@ enum class AppDestination(val label: String) {
     DOCUMENTS("Documents"),
     ASSISTANT("Ask"),
     LAB("Pipeline Lab"),
+    PRIVACY("Privacy & offline"),
     ABOUT("About")
 }
 
@@ -469,6 +471,7 @@ fun OcrApp() {
                                     AppDestination.DOCUMENTS -> "Stored on this phone"
                                     AppDestination.ASSISTANT -> "Answers from your saved documents"
                                     AppDestination.LAB -> "Image processing, stage by stage"
+                                    AppDestination.PRIVACY -> "What stays on this phone"
                                     AppDestination.ABOUT -> "Private by design"
                                 },
                                 style = MaterialTheme.typography.labelMedium,
@@ -635,6 +638,8 @@ fun OcrApp() {
 
                     AppDestination.LAB -> PipelineLabScreen(currentScan = sourceBitmap ?: previewBitmap)
 
+                    AppDestination.PRIVACY -> PrivacyScreen()
+
                     AppDestination.ABOUT -> AboutScreen()
                 }
             }
@@ -706,6 +711,12 @@ private fun DrawerContent(
             selected = selected == AppDestination.LAB,
             icon = { Icon(Icons.Outlined.Science, contentDescription = null) },
             onClick = { onNavigate(AppDestination.LAB) }
+        )
+        NavigationDrawerItem(
+            label = { Text("Privacy & offline") },
+            selected = selected == AppDestination.PRIVACY,
+            icon = { Icon(Icons.Outlined.PrivacyTip, contentDescription = null) },
+            onClick = { onNavigate(AppDestination.PRIVACY) }
         )
         NavigationDrawerItem(
             label = { Text("About") },

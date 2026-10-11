@@ -41,7 +41,10 @@ import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.Image
+import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Memory
+import androidx.compose.material.icons.outlined.PhonelinkLock
 import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Share
@@ -779,7 +782,7 @@ fun AboutScreen() {
     ) {
         Text("Private by design", style = MaterialTheme.typography.headlineSmall)
         Text(
-            "N152 turns photos into editable documents without an account, server, or network permission.",
+            "NavCert Offline turns photos into editable documents without an account, server, or network permission.",
             modifier = Modifier.padding(top = 8.dp, bottom = 24.dp),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -807,6 +810,54 @@ fun AboutScreen() {
             icon = { Icon(Icons.Outlined.AutoFixHigh, contentDescription = null) },
             title = "Automatic cleanup",
             description = "OpenCV aligns pages and improves contrast before recognition."
+        )
+    }
+}
+
+@Composable
+fun PrivacyScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(12.dp)
+            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
+            .padding(horizontal = 20.dp, vertical = 18.dp)
+    ) {
+        Text("Privacy & offline", style = MaterialTheme.typography.headlineSmall)
+        Text(
+            "NavCert Offline collects no data. It has no account, no server, no analytics and no ads.",
+            modifier = Modifier.padding(top = 8.dp, bottom = 24.dp),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        AboutRow(
+            icon = { Icon(Icons.Outlined.CloudOff, contentDescription = null) },
+            title = "No internet permission",
+            description = "The INTERNET and network-state permissions are removed from the app manifest, " +
+                "so Android blocks every network connection from this app."
+        )
+        HorizontalDivider()
+        AboutRow(
+            icon = { Icon(Icons.Outlined.Memory, contentDescription = null) },
+            title = "All processing on this device",
+            description = "Page detection (OpenCV), text recognition (ML Kit, PP-OCRv5), field extraction " +
+                "(MiniLM, MobileBERT) and answers run on the phone with models bundled in the app."
+        )
+        HorizontalDivider()
+        AboutRow(
+            icon = { Icon(Icons.Outlined.PhonelinkLock, contentDescription = null) },
+            title = "App-private storage",
+            description = "Saved documents and previews live in the app's private folder. Other apps cannot " +
+                "read them, and they are excluded from cloud backup and device transfer."
+        )
+        HorizontalDivider()
+        AboutRow(
+            icon = { Icon(Icons.Outlined.DeleteForever, contentDescription = null) },
+            title = "You stay in control",
+            description = "Delete any document from the Documents screen. Uninstalling the app or clearing " +
+                "its storage removes everything. Text leaves the app only when you tap Share or Copy."
         )
     }
 }

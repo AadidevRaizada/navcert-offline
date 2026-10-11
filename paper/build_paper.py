@@ -807,8 +807,9 @@ def build(pre_labels=None):
            "benchmark's field rule is simpler than the app's cascade.")
     P.para("Contour detection fails on borderless and low-contrast pages; corner ordering by *x* + *y* and "
            "*y* − *x* can collide for a page rotated near 45°; the Canny and quality thresholds need per-device "
-           "calibration. The corrector's guard against digit-bearing words stops its confusion map from ever firing, "
-           "and its dictionary lacks maritime words, so \"manning\" can become \"scanning\". Future work will build a "
+           "calibration. The companion evaluation also exposed two post-correction defects, a digit guard that kept the "
+           "confusion map from firing and a dictionary without maritime words; both are now fixed and locked by "
+           "regression tests. Future work will build a "
            "vessel-disjoint set of real photographed certificates with verified text, fields and corners; try learned "
            "detection and dewarping [@11,@21,@22] where contours fail; compare PP-OCRv6 with ML Kit on the "
            "phone; add an expiry-after-issue consistency check; and test layout-aware [@16] and OCR-free [@14] "

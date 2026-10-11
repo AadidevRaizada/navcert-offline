@@ -51,6 +51,7 @@ Findings:
 - The app's confusion map never fires. `correctWord` returns early for any word that contains a digit, so `d0cument` is never normalised. Removing that guard alone recovers all 144 digit-confusion words in this test.
 - A* expands about 3× fewer nodes than UCS (68.1 vs 206.4 and 74.0 vs 237.2) for the same answers.
 - Every method turns `manning` into `scanning`, because the dictionary has no maritime vocabulary. In the app, correction runs before field extraction, so a title such as "Minimum Safe Manning Certificate" written in mixed case is at risk. All-caps titles are protected by the uppercase guard.
+- Both app findings are now fixed in `OcrTextCorrector.kt`: digit look-alikes are normalised inside mixed tokens (identifiers, all-caps codes, dates and ordinals stay protected) and the dictionary carries maritime vocabulary. `OcrTextCorrectorTest.kt` reproduces both bugs. The numbers in this section describe the app before that fix.
 - The search methods score 100% partly because the noise model and the cost model share the same confusion list. That result shows the mechanism works, not that it would reach 100% on real OCR output.
 
 ## 3. Capture quality as a decision tree

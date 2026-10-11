@@ -10,6 +10,15 @@ package com.MAD.n152
 object OcrTextCorrector {
     private val dictionary = """
         about above across action after again against agreement all also analysis answer any application area around as asked available average back based because before between both build building business camera can cannot capture captured character characters check choose clear code color column common complete computer condition connect content convert correct correction created current data date document documents done each edit education either electronic email enough example extracted extraction file files final first following for from function future general get give given good has have help here high image images important improve including input install into issue its language large last later line local machine main make many model more most move name need never new next noise number numbers object offline only open output page pages paper parameters part performance phone photo pixels please possible precision prepare printed processing project provide read recognition recognize recognized record result results return run same scanned scanning screen search second select selection send sentence set should show simple since size small smartphone source start state text than that their them then there these they thing this time title to together total training text used user using value very view want way well when which word words work written wrong year your
+        advanced authority awareness basic board bridge capacity cargo certificate certificates certify
+        chemical coast competence competency competent completed compliance construction continuous
+        convention craft crew deck directorate discharge duties elementary endorsement endorsements engine
+        engineer equipment expiry firefighting fitness flag government holder insurance international issued
+        issuing maritime manning mariner mariners master medical merchant minimum navigation officer passport
+        personal place pollution port proficiency provisions radio rank rating ratings register registrar
+        registry regulation regulations rescue resource safe safety seafarer seafarers security shipping
+        signature society stcw survival tanker techniques tonnage until valid validity vessel vessels
+        watchkeeping
     """.trimIndent()
         .split(Regex("\\s+"))
         .map(String::lowercase)
@@ -30,9 +39,7 @@ object OcrTextCorrector {
 
     private fun correctWord(original: String): String {
         val lower = original.lowercase()
-        if (lower.length < 4 || original.all { it.isUpperCase() } || lower.any { it.isDigit() }) {
-            return original
-        }
+        if (lower.length < 4 || isProtected(original)) return original
         if (lower in dictionary) return original
 
         val normalized = lower.map { confusionMap[it] ?: it }.joinToString("")
@@ -53,6 +60,25 @@ object OcrTextCorrector {
             original.first().isUpperCase() -> best.first.replaceFirstChar { it.uppercase() }
             else -> best.first
         }
+    }
+
+    private val ordinal = Regex("(?i)\\d+(st|nd|rd|th)")
+
+    /**
+     * Identifiers, certificate numbers, dates and ordinals are never corrected.
+     * A token with digits is eligible only when its letters are not all capitals and
+     * its digits are a few known OCR look-alikes (0/1/5/6/8) inside an alphabetic word,
+     * for example "d0cument" or "5canned".
+     */
+    private fun isProtected(original: String): Boolean {
+        val letters = original.count { it.isLetter() }
+        val digits = original.count { it.isDigit() }
+        if (letters == 0) return true
+        if (original.filter { it.isLetter() }.all { it.isUpperCase() }) return true
+        if (digits == 0) return false
+        if (digits > 2 || letters < digits * 3) return true
+        if (original.any { it.isDigit() && it !in confusionMap }) return true
+        return ordinal.matches(original)
     }
 
     private fun levenshtein(first: String, second: String): Int {

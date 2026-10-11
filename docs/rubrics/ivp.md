@@ -535,7 +535,7 @@ See the end of this file ("Asset check") for which of the Section 0 files existe
 - **★ (callback):** 4 defects in. 1 clean page out. Still 0 bars.
   - Alt (metaphor): Out of dry dock, ready to sail
   - Alt (quote-as-title): "Image looks good." — NavCert Offline quality check
-- **Body (exact):** Aadidev Raizada · N152 · aadidevraizada26@gmail.com · github.com/AadidevRaizada/navcert-offline
+- **Body (exact):** Aadidev Raizada · N152 · raizada.aadidev522@nmims.in · github.com/AadidevRaizada/navcert-offline
 - **Visual:** left half: the four numbered defect circles from slide 2, now with blue ticks; right half: `app_preview_aligned.png`. If missing, freeze the last frame of the `corner-warp` x-embed.
 - **Build:** headline → ticks animate onto 1–4 (150 ms apart) → contact line.
 - **Speaker notes (25 s):**

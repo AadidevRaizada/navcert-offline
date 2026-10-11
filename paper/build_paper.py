@@ -356,7 +356,7 @@ def build(pre_labels=None):
     p = d.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     r = p.add_run("Aadidev Raizada"); set_font(r, 11)
     for line, it in (("Mukesh Patel School of Technology Management and Engineering", True),
-                     ("SVKM's NMIMS, Mumbai, India", True), ("aadidevraizada26@gmail.com", False)):
+                     ("SVKM's NMIMS, Mumbai, India", True), ("raizada.aadidev522@nmims.in", False)):
         p = d.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
         r = p.add_run(line); set_font(r, 10, italic=it)
     p.paragraph_format.space_after = Pt(12)

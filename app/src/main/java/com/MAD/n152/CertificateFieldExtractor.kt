@@ -75,21 +75,42 @@ object CertificateFieldExtractor {
         return null
     }
 
+    // OCR often reads "Port" as "Part", "P0rt" or "Pori"; the label may also say "Place of issue".
+    private const val portWord = "(?:port|part|p0rt|pori|p0ri)"
+    private val portLabel = Regex("(?i)\\b(?:place|$portWord)\\s+of\\s+issue\\b")
+    private val portCue = Regex("(?i)\\b(?:$portWord|harbou?r)\\b")
+    private val misreadPortPrefix = Regex("(?i)^(?:part|p0rt|pori|p0ri)(?=\\s+of\\b)")
+    private val otherFieldLabel = Regex(
+        "(?i)^(?:date|valid|expiry|signature|issuing\\s+authority|issued\\s+by|name\\s+of|certificate\\s+no|rank|vessel)\\b"
+    )
+
     private fun labeledPort(lines: List<String>): String? {
-        val marker = Regex("(?i)\\b(place|port)\\s+of\\s+issue\\b")
-        val placeCue = Regex("(?i)\\b(port|harbou?r)\\b|,")
         lines.forEachIndexed { index, line ->
-            val match = marker.find(line) ?: return@forEachIndexed
+            val match = portLabel.find(line) ?: return@forEachIndexed
             val sameLine = line.substring(match.range.last + 1).clean()
-            if (sameLine.length > 1) return sameLine
-            val candidates = lines.drop(index + 1).take(3)
+            if (sameLine.length > 1) return sameLine.asPort()
+            fun usable(candidate: String) = candidate.length in 2..80 && !candidate.endsWith(':') &&
+                !otherFieldLabel.containsMatchIn(candidate) && !portLabel.containsMatchIn(candidate) &&
+                date.find(candidate) == null
+            val after = lines.drop(index + 1).take(3)
                 .takeWhile { !it.endsWith(':') && !Regex("(?i)^(date|valid|expiry|signature)\\b").containsMatchIn(it) }
-                .filter { it.length in 2..80 }
-            candidates.firstOrNull { placeCue.containsMatchIn(it) }?.let { return it.clean() }
-            if (candidates.size == 1) return candidates.first().clean()
+                .filter { usable(it) }
+            // Column layouts can place the value line just above its label.
+            val before = lines.getOrNull(index - 1)?.takeIf { usable(it) }
+            fun isOrganization(candidate: String) = organizationName.containsMatchIn(candidate)
+
+            after.firstOrNull { portCue.containsMatchIn(it) }?.let { return it.asPort() }
+            before?.takeIf { portCue.containsMatchIn(it) }?.let { return it.asPort() }
+            after.firstOrNull { it.contains(',') && !isOrganization(it) }?.let { return it.asPort() }
+            after.singleOrNull()?.takeIf { !isOrganization(it) }?.let { return it.asPort() }
+            // Last resort: an organisation line is better than nothing, but it usually duplicates the authority.
+            after.firstOrNull { it.contains(',') }?.let { return it.asPort() }
+            after.singleOrNull()?.let { return it.asPort() }
         }
         return null
     }
+
+    private fun String.asPort() = clean().replace(misreadPortPrefix, "Port")
 
     private fun issuerFromHeader(lines: List<String>, name: String?): String? {
         val titleIndex = lines.indexOfFirst { it.equals(name, ignoreCase = true) }

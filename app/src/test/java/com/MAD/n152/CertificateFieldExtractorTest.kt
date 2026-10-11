@@ -90,4 +90,58 @@ class CertificateFieldExtractorTest {
         assertEquals("11July-2026", fields.expiryDate)
         assertEquals("master systems", fields.issuingAuthority)
     }
+
+    private val sampleOcr = """MARITIME SAFETY BOARD OF NORTH ESTRAVIA
+        |Issued under the provisions of the STCW Convention
+        |CERTIFICATE OF PROFICIENCY
+        |Proficiency in Survival Craft and Rescue Boats
+        |NE-SCRB-2025-04817
+        |Certificate No.
+        |Date of issue
+        |18 June 2025
+        |Part of Valmora
+        |Place of issue
+        |Issuing authority
+        |Maritime Safety Board, Valmora
+        |Date of expiry
+        |17 June 2030
+    """.trimMargin()
+
+    @Test
+    fun portValueAboveLabelIsPreferredOverAuthorityLine() {
+        val fields = CertificateFieldExtractor.extract(sampleOcr)
+        assertEquals("Port of Valmora", fields.issuePort)
+        assertEquals("Maritime Safety Board, Valmora", fields.issuingAuthority)
+        assertEquals("18 June 2025", fields.issueDate)
+        assertEquals("17 June 2030", fields.expiryDate)
+    }
+
+    @Test
+    fun correctedSampleKeepsPortAndAuthorityDistinct() {
+        val raw = sampleOcr.replace("Part of Valmora", "Port of Valmora")
+        val fields = CertificateFieldExtractor.extract(OcrTextCorrector.correct(raw))
+        assertEquals("Port of Valmora", fields.issuePort)
+        assertEquals("Maritime Safety Board, Valmora", fields.issuingAuthority)
+    }
+
+    @Test
+    fun portLabelToleratesOcrConfusions() {
+        listOf("Part of issue: Mumbai", "P0rt of issue: Mumbai", "Pori of issue: Mumbai", "Place of issue: Mumbai").forEach { line ->
+            val fields = CertificateFieldExtractor.extract("CERTIFICATE OF COMPETENCY\n$line")
+            assertEquals(line, "Mumbai", fields.issuePort)
+        }
+        val misread = CertificateFieldExtractor.extract("CERTIFICATE OF COMPETENCY\nPlace of issue\nP0rt of Kandla")
+        assertEquals("Port of Kandla", misread.issuePort)
+    }
+
+    @Test
+    fun organisationBelowLabelIsOnlyALastResort() {
+        val fields = CertificateFieldExtractor.extract(
+            """CERTIFICATE OF COMPETENCY
+               |Place of issue
+               |Directorate General of Shipping, Mumbai
+            """.trimMargin()
+        )
+        assertEquals("Directorate General of Shipping, Mumbai", fields.issuePort)
+    }
 }

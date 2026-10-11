@@ -31,10 +31,6 @@
         </activity>
 
         <activity
-            android:name=".ResultActivity"
-            android:exported="false" />
-
-        <activity
             android:name=".CropEditorActivity"
             android:exported="false"
             android:theme="@style/Theme.N152" />

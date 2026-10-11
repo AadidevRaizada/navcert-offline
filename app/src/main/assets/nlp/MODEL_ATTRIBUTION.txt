@@ -1,0 +1,10 @@
+Certificate field question-answering model
+
+Based on deepset/minilm-uncased-squad2 by deepset:
+https://huggingface.co/deepset/minilm-uncased-squad2
+License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/
+
+Changes: fine-tuned locally on automatically labeled maritime certificate text,
+exported to ONNX, then dynamically quantized to int8 for on-device inference.
+The original model authors do not endorse this application.

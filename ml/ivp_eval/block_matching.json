@@ -1,0 +1,182 @@
+{
+  "sharp_frames": {
+    "block": 16,
+    "search_range": 7,
+    "cost": "mean absolute difference per pixel (SAD / 256)",
+    "pairs": 10,
+    "prefilter_gaussian_sigma": null,
+    "frame_px": [
+      480,
+      640
+    ],
+    "noise_sigma": 2.0,
+    "seed": 152,
+    "true_vectors": [
+      [
+        -3,
+        4
+      ],
+      [
+        -5,
+        -2
+      ],
+      [
+        2,
+        0
+      ],
+      [
+        -1,
+        -5
+      ],
+      [
+        -3,
+        -7
+      ],
+      [
+        -6,
+        2
+      ],
+      [
+        3,
+        -7
+      ],
+      [
+        5,
+        -3
+      ],
+      [
+        7,
+        3
+      ],
+      [
+        -7,
+        2
+      ]
+    ],
+    "blocks_total": 9990,
+    "textured_blocks": 5221,
+    "texture_rule": "block std > 10.0",
+    "methods": {
+      "exhaustive": {
+        "mean_search_points_per_block": 225.0,
+        "max_search_points_per_block": 225,
+        "mean_vector_error_px_all": 0.5845723300975345,
+        "mean_vector_error_px_textured": 0.0013407393219689715,
+        "exact_vector_rate_all": 0.9093093093093093,
+        "exact_vector_rate_textured": 0.9994253974334418,
+        "mean_mad_cost": 1.5950852378710612,
+        "median_python_ms_per_frame": 3121.2921500009543
+      },
+      "three_step": {
+        "mean_search_points_per_block": 25.0,
+        "max_search_points_per_block": 25,
+        "mean_vector_error_px_all": 5.023941406776902,
+        "mean_vector_error_px_textured": 5.0528812467051205,
+        "exact_vector_rate_all": 0.23963963963963963,
+        "exact_vector_rate_textured": 0.2963033901551427,
+        "mean_mad_cost": 6.593080323904723,
+        "median_python_ms_per_frame": 409.6361500014609
+      },
+      "2d_log": {
+        "mean_search_points_per_block": 20.654654654654653,
+        "max_search_points_per_block": 31,
+        "mean_vector_error_px_all": 5.054261943208057,
+        "mean_vector_error_px_textured": 5.10238270186362,
+        "exact_vector_rate_all": 0.23383383383383383,
+        "exact_vector_rate_textured": 0.3280980655046926,
+        "mean_mad_cost": 6.8168698544616815,
+        "median_python_ms_per_frame": 320.8585499996843
+      }
+    }
+  },
+  "lowpass_sigma2_frames": {
+    "block": 16,
+    "search_range": 7,
+    "cost": "mean absolute difference per pixel (SAD / 256)",
+    "pairs": 10,
+    "prefilter_gaussian_sigma": 2.0,
+    "frame_px": [
+      480,
+      640
+    ],
+    "noise_sigma": 2.0,
+    "seed": 152,
+    "true_vectors": [
+      [
+        -3,
+        4
+      ],
+      [
+        -5,
+        -2
+      ],
+      [
+        2,
+        0
+      ],
+      [
+        -1,
+        -5
+      ],
+      [
+        -3,
+        -7
+      ],
+      [
+        -6,
+        2
+      ],
+      [
+        3,
+        -7
+      ],
+      [
+        5,
+        -3
+      ],
+      [
+        7,
+        3
+      ],
+      [
+        -7,
+        2
+      ]
+    ],
+    "blocks_total": 9990,
+    "textured_blocks": 5097,
+    "texture_rule": "block std > 10.0",
+    "methods": {
+      "exhaustive": {
+        "mean_search_points_per_block": 225.0,
+        "max_search_points_per_block": 225,
+        "mean_vector_error_px_all": 1.2681557406969037,
+        "mean_vector_error_px_textured": 0.096919756719639,
+        "exact_vector_rate_all": 0.6548548548548548,
+        "exact_vector_rate_textured": 0.928585442417108,
+        "mean_mad_cost": 0.21628200105420342,
+        "median_python_ms_per_frame": 3190.9660499986785
+      },
+      "three_step": {
+        "mean_search_points_per_block": 25.0,
+        "max_search_points_per_block": 25,
+        "mean_vector_error_px_all": 3.2425170548662874,
+        "mean_vector_error_px_textured": 3.217922802361786,
+        "exact_vector_rate_all": 0.35705705705705704,
+        "exact_vector_rate_textured": 0.49087698646262506,
+        "mean_mad_cost": 0.8205914175277715,
+        "median_python_ms_per_frame": 463.8310999980604
+      },
+      "2d_log": {
+        "mean_search_points_per_block": 21.47247247247247,
+        "max_search_points_per_block": 31,
+        "mean_vector_error_px_all": 3.149278412938069,
+        "mean_vector_error_px_textured": 2.962972789884131,
+        "exact_vector_rate_all": 0.407007007007007,
+        "exact_vector_rate_textured": 0.5874043555032372,
+        "mean_mad_cost": 0.7244317103852261,
+        "median_python_ms_per_frame": 342.37230000144336
+      }
+    }
+  }
+}

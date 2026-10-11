@@ -19,3 +19,18 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+# ---- NavCert Offline release rules ----
+# Native ML and vision runtimes call back into Java/Kotlin classes through JNI by name.
+-keepclasseswithmembernames,includedescriptorclasses class * {
+    native <methods>;
+}
+-keep class ai.onnxruntime.** { *; }
+-keep class org.tensorflow.lite.** { *; }
+-keep class org.opencv.** { *; }
+-keep class com.google.mlkit.** { *; }
+-keep class com.google.android.gms.internal.mlkit_vision_text_common.** { *; }
+-keep class com.canhub.cropper.** { *; }
+-dontwarn ai.onnxruntime.**
+-dontwarn org.tensorflow.lite.**
+-dontwarn com.google.auto.value.**
+-dontwarn org.opencv.**

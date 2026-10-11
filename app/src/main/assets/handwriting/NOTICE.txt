@@ -1,0 +1,7 @@
+PP-OCRv5 English mobile recognition model
+Source: PaddlePaddle/PaddleOCR and egdels/MakeACopy
+License: Apache License 2.0
+Model: en_PP-OCRv5_mobile_rec
+SHA-256: EA2C21EB490B479BE0408BBB1B71F503C33D851845008DC9FDCD8D91E1731B4B
+
+The model and vocabulary are bundled for fully offline handwriting recognition.

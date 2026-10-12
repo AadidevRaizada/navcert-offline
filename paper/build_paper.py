@@ -368,19 +368,19 @@ def build(pre_labels=None):
     r = p.add_run("—"); set_font(r, 9, bold=True)
     P.rich(p, (
         "Seafarers' certificates are checked in ports and on board, often without a network connection. NavCert "
-        "Offline is an Android application that digitizes them entirely on the phone. A classical OpenCV front end "
-        "finds the page with Canny edges, morphological closing and polygon approximation, rectifies it with a "
-        "four-point homography, screens capture quality with brightness and Laplacian-variance tests, and enhances "
-        "it with CLAHE, median filtering and unsharp masking or adaptive thresholding. On-device OCR and a rule, "
-        "MiniLM and MobileBERT cascade then extract five certificate fields. We measure the image processing on 200 "
-        "paired synthetic camera captures under eight degradations with known ground truth. Rectification lowers the "
-        "mean character error rate (CER) from 9.6% to 4.2% and raises five-field exact match from 69.1% to 88.4%; "
-        "the paired CER reduction is 5.4 points (95% CI 3.9–7.1). Contrast enhancement gives no average gain with "
-        "the evaluation OCR engine, helps under low light and blur, and hurts under overexposure. Under cast "
-        "shadows, adaptive thresholding keeps CER below 0.5% where global and Otsu thresholds reach 34–40%. Text "
-        "survives 8×8 DCT coding at 0.29 bit/pixel with 0.35% CER, while three-step and 2-D logarithmic block "
-        "matching find the true motion vector on only 30–33% of textured text blocks. An in-app Pipeline Lab shows "
-        "every operation on the user's own scan."), size=9, bold=True)
+        "Offline is an Android application that digitizes them on the phone alone. A classical OpenCV front end "
+        "finds the page with Canny edges, morphological closing and polygon approximation and rectifies it with a "
+        "four-point homography. It then screens capture quality with brightness and Laplacian-variance tests and "
+        "enhances the page with CLAHE, median filtering and unsharp masking or adaptive thresholding. On-device OCR "
+        "and a cascade of rules, MiniLM and MobileBERT extract five certificate fields. The image processing is "
+        "evaluated on 200 paired synthetic camera captures under eight degradations with known ground truth. "
+        "Rectification lowers the mean character error rate (CER) from 9.6% to 4.2% and raises five-field exact "
+        "match from 69.1% to 88.4%, a paired CER reduction of 5.4 points (95% CI 3.9–7.1). Contrast enhancement "
+        "gives no average gain with the evaluation OCR engine; it helps under low light and blur and hurts under "
+        "overexposure. Under cast shadows, adaptive thresholding keeps CER below 0.5%, while global and Otsu "
+        "thresholds reach 34–40%. OCR still reads text after 8×8 DCT coding at 0.29 bit/pixel (0.35% CER). "
+        "Three-step and 2-D logarithmic block matching find the true motion vector on only 30–33% of textured text "
+        "blocks. An in-app Pipeline Lab displays every operation on the user's own scan."), size=9, bold=True)
     p.paragraph_format.space_after = Pt(4)
     p = d.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     r = p.add_run("Index Terms"); set_font(r, 9, bold=True, italic=True)
@@ -390,18 +390,19 @@ def build(pre_labels=None):
 
     # ---------------- I. Introduction
     P.heading("I", "Introduction")
-    P.para("Merchant shipping runs on certified people. The STCW Convention sets the certification every seafarer "
-           "must prove, and its 2010 Manila amendments target fraudulent certificates of competency [@58]. The 2026 "
-           "BIMCO/ICS report estimates 2,565,580 STCW-certified seafarers serving 85,148 ships [@62]; India supplies "
-           "311,936 of them, 12.16% of the total [@67]. Each certificate is read again and again by employers, "
-           "manning agents and port state control officers, and the checks matter: an IMO study around 2000 recorded "
-           "12,635 detected forgery cases, with 82% of survey respondents reporting forged certificates of "
-           "competency [@60], and Asia-Pacific port state control recorded 877 crew-certificate deficiencies in 2022 "
+    P.para("The STCW Convention sets the certification that every seafarer must hold, and its 2010 Manila "
+           "amendments address fraudulent certificates of competency [@58]. The 2026 BIMCO/ICS report estimates that "
+           "2,565,580 STCW-certified seafarers serve on 85,148 ships [@62]. India supplies 311,936 of them, or 12.16% "
+           "of the total [@67]. Employers, manning agents and port state control officers each read these "
+           "certificates, often repeatedly. The checks guard against forgery. An IMO study from around 2000 recorded "
+           "12,635 detected forgery cases, and 82% of its survey respondents reported forged certificates of "
+           "competency [@60]. Asia-Pacific port state control recorded 877 crew-certificate deficiencies in 2022 "
            "and 1,304 in 2024 [@64]. Electronic certificates help, but IMO guidance assumes that the verifying party "
-           "has an Internet connection [@61], which a ship at sea or a remote berth cannot promise.")
-    P.para("A hand-held phone photo is a poor input for OCR: the page is a projected trapezium on a cluttered "
-           "table, unevenly lit, blurred, noisy and JPEG-compressed. This paper asks how much of that gap classical image and video processing can close "
-           "on the device, and measures the answer. Its contributions are:")
+           "has an Internet connection [@61], which a ship at sea or at a remote berth cannot guarantee.")
+    P.para("A hand-held phone photo is a poor input for OCR. The page appears as a projected trapezium on a "
+           "cluttered table, and the image is unevenly lit, blurred, noisy and JPEG-compressed. This paper measures "
+           "how much of that loss classical image and video processing can recover on the device. The "
+           "contributions are:")
     P.bullets([
         "a fully offline Android pipeline that detects, rectifies, checks and enhances a certificate photo, reads it "
         "and extracts five fields (certificate name, issue date, port of issue, issuing authority, expiry date);",
@@ -413,11 +414,12 @@ def build(pre_labels=None):
 
     # ---------------- II. Related work
     P.heading("II", "Related Work")
-    P.para("*Capture and rectification.* OCRdroid guided phone capture but recognized text on a server [@2]; the "
+    P.para("*Capture and rectification.* OCRdroid guided phone capture but ran recognition on a server [@2]. The "
            "ICDAR 2015 SmartDoc competition benchmarked page detection and OCR on smartphone photos [@23]. Classical "
            "rectification fits a homography to four page corners [@48], found with Canny edges [@40], border "
-           "following [@46] and Douglas–Peucker simplification [@47]. Learned dewarpers such as DocUNet [@21] and "
-           "DocTr [@22] also flatten curled pages but need training data and far more compute.")
+           "following [@46] and Douglas–Peucker simplification [@47]. DocUNet [@21] and DocTr [@22] are learned "
+           "dewarping networks that can also correct curled pages, at the cost of training data and much heavier "
+           "computation.")
     P.para("*Enhancement and binarization.* Histogram equalization is the standard global contrast tool [@37]; "
            "CLAHE equalizes tiles and clips their histograms to limit noise gain [@45]. "
            "Otsu's method picks one global threshold [@39]; Sauvola's method [@50] adapts it locally for unevenly "
@@ -428,8 +430,8 @@ def build(pre_labels=None):
            "binarization [@11]. ML Kit bundles an offline Latin recognizer [@35]. Layout-aware models [@15,@16] "
            "and OCR-free models such as Donut [@14] are stronger on forms but larger. For extraction, BERT-style "
            "question answering [@27] has compact variants in MobileBERT [@28] and MiniLM [@29]; integer quantization "
-           "[@32] and ONNX Runtime Mobile [@33] make them practical on phones. Unlike prior capture systems, this "
-           "work keeps every stage on the device and reports a paired measurement of each classical stage.")
+           "[@32] and ONNX Runtime Mobile [@33] make them practical on phones. Compared with the capture systems "
+           "above, this work runs every stage on the device and reports a paired measurement for each classical stage.")
 
     # ---------------- III. System overview
     P.heading("III", "System Overview")
@@ -456,8 +458,9 @@ def build(pre_labels=None):
     P.heading("IV", "Image Processing Pipeline")
     P.para("Table {tab:params} lists every stage with the constants in *DocumentScanner.kt*.")
     P.subheading("A", "Resolution and Page Detection")
-    P.para("The app only downsamples: one copy for OCR is capped at 3200 px on its longer side and one for analysis "
-           "at 1600 px; smaller photos keep their size. All stages work on luminance [@37],")
+    P.para("The app resizes each photo into two copies, one for OCR with its longer side capped at 3200 px and one "
+           "for analysis capped at 1600 px. Resizing only shrinks images, so a smaller photo keeps its original size. "
+           "All stages operate on luminance [@37],")
     P.equation("gray", math(v("Y"), t("="), t("0.299"), v("R"), t("+"), t("0.587"), v("G"), t("+"), t("0.114"), v("B"), t(".")))
     P.table("params", "Image processing stages and constants",
             ["Stage", "Operation", "Constants"],
@@ -485,9 +488,10 @@ def build(pre_labels=None):
            "gradient", indent=False)
     P.equation("grad", math(v("M"), t("="), sqrt(cat(sup(sub(v("G"), v("x")), t("2")), t("+"), sup(sub(v("G"), v("y")), t("2")))),
                             t(",  "), v("θ"), t("="), func("atan2", delim(cat(sub(v("G"), v("y")), t(","), sub(v("G"), v("x"))))), t(",")))
-    P.para("keeps only local maxima of *M* along θ, and links edges by hysteresis: a pixel with *M* > *T*_{H} = 170 "
-           "starts an edge that may continue through pixels with *M* > *T*_{L} = 55, so strong page borders seed "
-           "edges and the low threshold carries them through shadow. A 5×5 closing [@54],", indent=False)
+    P.para("suppresses pixels that are not local maxima of *M* along θ, and then links edges by hysteresis. An edge "
+           "starts at a pixel with *M* > *T*_{H} = 170 and may continue through connected pixels with *M* > *T*_{L} = 55. "
+           "The high threshold lets strong page borders start edges, and the low one keeps those edges connected "
+           "where they pass through shadow. A 5×5 closing [@54],", indent=False)
     P.equation("close", math(v("A"), t("•"), v("B"), t("="), delim(cat(v("A"), t("⊕"), v("B"))), t("⊖"), v("B"), t(",")))
     P.para("bridges breaks in the edge map without growing the outline. Contours are traced [@46], the 20 largest are "
            "simplified by Douglas–Peucker [@47] at 2% of their perimeter, and the largest convex quadrilateral covering "
@@ -527,8 +531,8 @@ def build(pre_labels=None):
                              cat(sub(v("w"), cat(v("i"), v("j"))), sub(v("T"), cat(v("i"), v("j"))), delim(v("r")))), t(",")))
     P.para("with *i*, *j* ∈ {0, 1}, bilinear weights *w*_{00} = (1 − *a*)(1 − *b*), *w*_{10} = *a*(1 − *b*), *w*_{01} = (1 − *a*)*b*, "
            "*w*_{11} = *ab* from the pixel's offsets *a*, *b* ∈ [0, 1] between tile centers, so no seams appear. "
-           "Fig. {fig:hist} shows the effect under a shadow: global equalization darkens the shadow further, while "
-           "CLAHE keeps both halves legible. A 3×3 median, *g* = median{*f*(*s*,*t*) : (*s*,*t*) ∈ *S*_{xy}}, then "
+           "Fig. {fig:hist} shows the effect under a shadow. Global equalization darkens the shadowed region further, "
+           "while CLAHE keeps both halves legible. A 3×3 median, *g* = median{*f*(*s*,*t*) : (*s*,*t*) ∈ *S*_{xy}}, then "
            "removes speckle without blurring strokes. Auto and Clean modes sharpen by unsharp masking,", indent=False)
     P.figure("hist", FIG / "fig_histogram_clahe.png", COL_W,
              "A shadowed page: rectified gray, global histogram equalization and CLAHE (clip 2.2, 8×8 tiles), with "
@@ -579,10 +583,10 @@ def build(pre_labels=None):
            "(10) page geometry with Euclidean, city-block and chessboard distances; and (11) block matching.")
     P.para("Point operations, histograms, Otsu, labelling, binary morphology, the DCT and the three searches are "
            "unit-tested Kotlin written from first principles; the other stages call OpenCV and the production "
-           "*DocumentScanner* functions, so the Lab shows exactly what the scanner does. In stage 11, frame *t* is synthesized from frame *t* − 1 by a 4 px / −3 px shift, "
+           "*DocumentScanner* functions, so the Lab displays the same operations the scanner performs. In stage 11, frame *t* is synthesized from frame *t* − 1 by a 4 px / −3 px shift, "
            "a 0.4° rotation and noise; ES, TSS and 2-D log search run on 16×16 blocks with *p* = 7, blank blocks are "
-           "ignored, and a dominant vector longer than 1.5 px is reported as camera motion. This steady-capture "
-           "decision is a Lab demonstration, not part of the capture screen.")
+           "ignored, and a dominant vector longer than 1.5 px is reported as camera motion. The steady-capture "
+           "decision is demonstrated only in the Lab; the capture screen does not use it.")
     P.figure("lab", FIG / "fig_lab_screens.png", COL_W,
              "Pipeline Lab on the synthetic sample: (a) corners, closed Canny edges, warp and enhancement; "
              "(b) input, equalized and CLAHE histograms; (c) points tested by ES, TSS and 2-D log search for one "
@@ -595,9 +599,9 @@ def build(pre_labels=None):
            "cropped from the enhanced page with margins of 4% (horizontal) and 22% (vertical), resized to a height of "
            "48 px with a width that is a multiple of 8 (16–2048 px), scaled to [−1, 1] and read by the 7.96 MB "
            "PP-OCRv5 English recognizer [@6] in ONNX Runtime [@33] with greedy CTC decoding [@10]; below a "
-           "confidence of 0.20 the ML Kit line is kept. This path returns text only: correction and field "
-           "extraction are skipped.")
-    P.para("In printed and automatic modes, a conservative corrector maps digit–letter confusions and replaces a "
+           "confidence of 0.20 the ML Kit line is kept. This path returns text only, without correction or field "
+           "extraction.")
+    P.para("In printed and automatic modes, a conservative corrector maps confusions between digits and letters and replaces a "
            "word only when a dictionary word is within Levenshtein distance 1 (2 for seven or more letters) [@81] and "
            "clearly closer than the runner-up; short, all-capital and digit-bearing words are protected. Field "
            "extraction is a cascade. Label rules (\"Issued at *place* on *date*\", labelled dates, port lines, header "
@@ -663,11 +667,11 @@ def build(pre_labels=None):
              ["+ B&W adaptive", "7.6%", "0.58%", "14.6%", "86.7%", "74.0%"]],
             [0.9, 0.52, 0.55, 0.42, 0.55, 0.52])
     P.para("Rectification more than halves the mean CER and raises field exact match from 691 to 884 of 1,000 slots "
-           "(Table {tab:overall}). Against the raw photo, the Auto page lowers CER by 5.4 points (95% CI 3.9–7.1), "
-           "better on 112 captures, worse on 40 and tied on 48. The gain is geometric: rectified and enhanced pages "
-           "have the same CER and field score, and word recall barely moves (92.9% to 93.6%). Every field improves "
-           "with rectification (of 200): certificate name 136→177, issue date 145→180, port 152→180, authority "
-           "117→170, expiry 141→177. B&W is worse than gray on average.")
+           "(Table {tab:overall}). Relative to the raw photo, the Auto page lowers CER by 5.4 points (95% CI 3.9–7.1); "
+           "it is better on 112 captures, worse on 40 and tied on 48. The gain comes from the geometric correction. "
+           "Rectified and enhanced pages have the same CER and field score, and word recall changes little (92.9% to "
+           "93.6%). Each field improves with rectification (counts of 200): certificate name 136→177, issue date "
+           "145→180, port 152→180, authority 117→170, expiry 141→177. On average, B&W performs worse than gray.")
     P.figure("cer", FIG / "fig_cer_field_by_degradation.png", COL_W,
              "Mean CER (top) and five-field exact match (bottom) by degradation. Error bars: 95% percentile-bootstrap "
              "intervals over captures.")
@@ -689,29 +693,31 @@ def build(pre_labels=None):
             rows, [0.62, 0.48, 0.32, 0.34, 0.34, 0.78, 0.3, 0.32], size=7,
             notes="Quad: page quadrilateral found. ΔCER: paired reduction from raw photo to Auto gray. EM: five-field "
                   "exact match.")
-    P.para("Fig. {fig:cer} and Table {tab:deg} break the result down. Tilt dominates: raw CER of 20.3% falls to 0.4% "
-           "after rectification although raw word recall is already 99.4%, so the words are read but the reading "
-           "order is scrambled. Enhancement matters where detection fails or text is soft. Under low light a quad is "
-           "found on only 33% of captures; at the strongest level, where raw and rectified are the same image, CER "
-           "falls from 11.1% to 7.2% with Auto and to 3.8% with B&W. Under Gaussian blur, word recall rises from "
-           "90.8% to 96.3%. Under overexposure enhancement hurts (rectified 1.1%, Auto 2.7%), plausibly because CLAHE and "
-           "sharpening amplify the clipped background. Motion blur is the hardest case (24.4% after rectification), "
-           "and binarization worsens it to 41.5% by breaking smeared strokes.")
+    P.para("Fig. {fig:cer} and Table {tab:deg} give the results per degradation. Tilt has the largest effect. Raw "
+           "CER of 20.3% falls to 0.4% after rectification, although raw word recall is already 99.4%; the words on a "
+           "tilted page are read, but in the wrong order. Enhancement helps mainly when page detection fails or the "
+           "text is soft. Under low light a quad is found on only 33% of captures. At the strongest low-light level, "
+           "where the raw and rectified images are identical, CER falls from 11.1% to 7.2% with Auto and to 3.8% with "
+           "B&W. Under Gaussian blur, word recall rises from 90.8% to 96.3%. Under overexposure, enhancement raises "
+           "CER from 1.1% (rectified) to 2.7% (Auto), plausibly because CLAHE and sharpening amplify the clipped "
+           "background. Motion blur is the hardest case, with 24.4% CER after rectification, and binarization raises "
+           "this to 41.5% by breaking the smeared strokes.")
 
     P.subheading("C", "Page Detection and Quality Checks")
     P.para("A quadrilateral was found on 184 of 200 captures and matched the true page with IoU ≥ 0.9 on 156; when "
-           "found, mean IoU was 0.976 and median corner error 1.3 px in the 1800×2400 frame. Misses concentrate in "
-           "low light; IoU drops under overexposure and motion blur.")
+           "found, mean IoU was 0.976 and median corner error 1.3 px in the 1800×2400 frame. Most misses occur in "
+           "low light, and IoU drops under overexposure and motion blur.")
     P.table("quality", "Quality verdict vs applied degradation (n = 200)",
             ["Expected \\ app label", "Good", "Dark", "Bright", "Soft"],
             [["Good (n = 104)", "104", "0", "0", "0"], ["Too dark (n = 24)", "8", "16", "0", "0"],
              ["Too bright (n = 24)", "5", "0", "19", "0"], ["Soft image (n = 48)", "37", "0", "0", "11"]],
             [1.3, 0.5, 0.5, 0.55, 0.5])
-    P.para("The quality checks raised no false alarm and gave the expected label on 150 of 200 captures (Table "
-           "{tab:quality}). The dark flag fired on every medium and strong low-light capture; the eight misses were "
-           "mild ones with mean gray 65. The blur flag caught all eight strong Gaussian-blur captures but only 1 of 24 "
-           "motion-blurred ones: motion blur keeps strong second derivatives across the stroke direction, so the "
-           "whole-frame Laplacian variance, background texture included, stays above 65.")
+    P.para("The quality checks produced no false alarms and gave the expected label on 150 of 200 captures (Table "
+           "{tab:quality}). The dark flag fired on every medium and strong low-light capture. The eight it missed "
+           "were mild cases with a mean gray level of 65. The blur flag caught all eight strong Gaussian-blur captures "
+           "but only 1 of the 24 motion-blurred ones. Motion blur leaves strong second derivatives across the stroke "
+           "direction, and the Laplacian variance is computed over the whole frame, background texture included, so "
+           "it stays above 65.")
 
     P.subheading("D", "Thresholding Under Shadow")
     P.figure("thr", FIG / "fig_threshold_comparison.png", COL_W,
@@ -725,13 +731,14 @@ def build(pre_labels=None):
              ["No threshold", "0.03%", "–", "–", "–"]],
             [1.1, 0.6, 0.5, 0.75, 0.5],
             notes="App path: after CLAHE and 3×3 median. Ink F1: pixel F1 against the rendered ink mask.")
-    P.para("Rectifying the 24 shadow captures with their true corners isolates binarization (Fig. {fig:thr}, Table "
-           "{tab:thr}). Only the adaptive threshold survives, with CER 0.05%, close to the 0.03% of the gray page. "
-           f"Otsu fails even under the mildest shadow ({pct(thr['otsu_gray']['by_severity_cer']['1'])}% CER), and the "
-           f"fixed threshold works at mild severity ({pct(thr['global127_gray']['by_severity_cer']['1'], 2)}%) but not "
-           f"at medium or strong ({pct(thr['global127_gray']['by_severity_cer']['2'])}% and "
-           f"{pct(thr['global127_gray']['by_severity_cer']['3'])}%). CLAHE and the median do not rescue either global "
-           "method.")
+    P.para("To isolate binarization, the 24 shadow captures were rectified with their true corners (Fig. {fig:thr}, "
+           "Table {tab:thr}). Only the adaptive threshold keeps the text readable, with a CER of 0.05% against 0.03% "
+           "for the unthresholded gray page. "
+           f"Otsu's method fails even under the mildest shadow ({pct(thr['otsu_gray']['by_severity_cer']['1'])}% CER). "
+           f"The fixed threshold works at mild severity ({pct(thr['global127_gray']['by_severity_cer']['1'], 2)}%) but "
+           f"fails at medium and strong severity ({pct(thr['global127_gray']['by_severity_cer']['2'])}% and "
+           f"{pct(thr['global127_gray']['by_severity_cer']['3'])}%). Applying CLAHE and the median filter first does "
+           "not help either global method.")
 
     P.subheading("E", "DCT Compression")
     P.table("dct", "8×8 DCT coding of six clean pages",
@@ -743,11 +750,12 @@ def build(pre_labels=None):
             [1.06] + [0.305] * 8,
             notes="Uncompressed CER 0.02%. Keeping only the top-left *k*×*k* coefficients gives CER 0.12%, 0.30%, "
                   "0.75%, 4.1% and 98.9% for *k* = 6, 4, 3, 2, 1 (PSNR 30.3 to 16.6 dB).")
-    P.para("Text is robust to transform coding (Table {tab:dct}). At quality 10 only 4.7% of coefficients are "
-           "nonzero and a real JPEG needs 0.29 bit/pixel, yet CER stays at 0.35% while PSNR falls to 27.7 dB. CER is "
-           "not monotonic at high quality (0.41% at 75, 0.33% at 50), so differences below about half a point are "
-           "noise. Zonal coding fails only below 3×3 coefficients, when strokes merge into block averages. The "
-           "app's quality-88 previews therefore cost little in legibility.")
+    P.para("OCR accuracy is largely insensitive to transform coding (Table {tab:dct}). At quality 10, only 4.7% of "
+           "coefficients are nonzero and a real JPEG needs 0.29 bit/pixel, yet CER stays at 0.35% while PSNR falls to "
+           "27.7 dB. CER does not change monotonically at high quality (0.41% at 75, 0.33% at 50), so differences "
+           "below about half a point should be treated as noise. Zonal coding fails only when fewer than 3×3 "
+           "coefficients are kept, at which point strokes merge into block averages. The app's quality-88 previews "
+           "therefore lose little legibility.")
 
     P.subheading("F", "Block-Matching Motion Estimation")
     P.table("bm", "Block matching on 10 text frame pairs (9,990 blocks)",
@@ -765,8 +773,8 @@ def build(pre_labels=None):
     P.para("Ten pairs of 480×640 frames were made by shifting a synthetic capture by a random integer vector in "
            "[−7, 7]² and adding noise (σ = 2), so every true vector is known. ES recovers it on 99.9% of textured "
            "blocks (Table {tab:bm}). TSS and 2-D log search test 9–11 times fewer points but are exact on only 29.6% "
-           "and 32.8% of blocks, with mean errors above 5 px. Fig. {fig:bm} shows why: on text the cost surface has "
-           "many local minima, and the first coarse step commits to the wrong one. Low-pass filtering both frames "
+           "and 32.8% of blocks, with mean errors above 5 px. Fig. {fig:bm} shows the reason. On text, the cost surface "
+           "has many local minima, and the first coarse step commits to the wrong one. Low-pass filtering both frames "
            "raises the fast searches to 49.1% and 58.7%, at a small cost to ES (92.9%).")
     P.figure("bm", FIG / "fig_block_matching.png", COL_W,
              "Points visited by (a) TSS and (b) 2-D log search for one text block; both settle at the local "
@@ -775,36 +783,39 @@ def build(pre_labels=None):
     P.subheading("G", "Processing Time")
     P.para("Median desktop times per 1800×2400 capture (12 captures × 5 repeats) were 1.3 ms (resize), 14.6 ms "
            "(quality check), 6.3 ms (detection), 8.8 ms (warp) and 6.2 ms or 19.1 ms (Auto or B&W enhancement), "
-           "against 1063 ms for one PP-OCRv6 call: the classical Auto path costs about 37 ms, roughly 3.5% of OCR. "
+           "against 1063 ms for one PP-OCRv6 call, so the classical Auto path takes about 37 ms, roughly 3.5% of "
+           "OCR. "
            "Phone latency was not measured.")
     P.heading("IX", "Discussion")
-    P.para("*Why rectification dominates.* Learned line detectors tolerate skew, so on a tilted page "
-           "nearly every word is still read; what breaks is the line structure: slanted lines interleave, and a label "
-           "no longer shares a line with its value. The homography restores horizontal lines and with them the "
-           "label–value structure that label-based extraction needs, which is why CER and field match move together "
-           "while word recall stays flat.")
+    P.para("*Why rectification dominates.* Learned line detectors tolerate skew, so nearly every word on a tilted "
+           "page is still read. Skew breaks the line structure instead: slanted lines interleave, and a label no "
+           "longer shares a line with its value. The homography straightens the lines and restores the pairing of "
+           "labels and values that label-based extraction needs, so CER and field match improve together while word "
+           "recall stays flat.")
     P.para("*When enhancement helps and hurts.* A learned recognizer already normalizes contrast, so CLAHE and "
-           "sharpening add little on well-exposed pages. They help where the signal is weak (dark or Gaussian-blurred "
-           "captures, especially when no page is found) and hurt on clipped input, where CLAHE stretches residual "
-           "texture and the unsharp mask overshoots. The measured brightness and sharpness could pick the mode.")
-    P.para("*Why Otsu fails under shadow.* A cast shadow splits the paper into two background modes, so the "
-           "variance-maximizing threshold separates lit from shadowed paper instead of ink from paper; a local "
-           "threshold follows the illumination.")
-    P.para("*Why fast block matching fails on text.* Text is a quasi-periodic texture: a shift of one character "
-           "or line pitch gives a near-equal match, so the cost surface is not unimodal and a coarse step lands in "
-           "the wrong basin. Smoothing widens the true basin. For a steady-capture trigger, exhaustive search on a "
-           "small, smoothed preview frame is the safer choice.")
-    P.para("*Implications for the app.* Rectification should stay mandatory and Auto gray the default; B&W suits "
-           "uneven light but not blur or noise. The quality check should run on the detected page and needs a "
-           "directional blur measure. In a companion synthetic experiment, a learned depth-3 decision tree on the "
+           "sharpening add little on well-exposed pages. They help when the signal is weak, as in dark or "
+           "Gaussian-blurred captures, especially when no page is found. On clipped input they hurt, because CLAHE "
+           "stretches the remaining texture and the unsharp mask overshoots. The brightness and sharpness measured by "
+           "the quality check could select the mode.")
+    P.para("*Why Otsu fails under shadow.* A cast shadow creates two background modes, so the "
+           "variance-maximizing threshold falls between lit and shadowed paper and no longer separates ink from "
+           "paper. A local threshold follows the illumination.")
+    P.para("*Why fast block matching fails on text.* Text is a quasi-periodic texture. A shift of one character or "
+           "line pitch gives a near-equal match, so the cost surface is not unimodal and a coarse step lands in the "
+           "wrong basin. Smoothing widens the true basin. A steady-capture trigger is therefore safer "
+           "with exhaustive search on a small, smoothed preview frame.")
+    P.para("*Implications for the app.* Rectification should stay mandatory, with Auto gray as default. B&W "
+           "suits uneven light but not blur or noise. The quality check should run on the detected page and needs a "
+           "directional blur measure. In a companion synthetic experiment, a depth-3 decision tree learned on the "
            "same two features reached 92.7% accuracy against 78.1% for the hand-set thresholds, which supports "
            "calibrating them on real phone captures.")
     P.heading("X", "Limitations and Future Work")
-    P.para("The benchmark is synthetic: clean one-column pages with known fonts and a simple camera model. Real "
+    P.para("The benchmark is synthetic, with clean one-column pages, known fonts and a simple camera model. Real "
            "captures add lens distortion, curl, glare, handwriting, tables and stamps over text, so the absolute "
-           "numbers are optimistic; the paired differences are the result. The benchmark OCR is PP-OCRv6 on a "
-           "desktop while the app uses ML Kit, so the study must be repeated on the phone with latency and memory. Samples are small (24 captures per degradation, 26 gold fields), and the "
-           "benchmark's field rule is simpler than the app's cascade.")
+           "numbers are optimistic and the paired differences are the main result. The benchmark OCR is PP-OCRv6 on "
+           "a desktop, while the app uses ML Kit, so the study must be repeated on the phone with latency and memory. "
+           "Samples are small (24 captures per degradation, 26 gold fields), and the benchmark's "
+           "field rule is simpler than the app's cascade.")
     P.para("Contour detection fails on borderless and low-contrast pages; corner ordering by *x* + *y* and "
            "*y* − *x* can collide for a page rotated near 45°; the Canny and quality thresholds need per-device "
            "calibration. The companion evaluation also exposed two post-correction defects, a digit guard that kept the "
@@ -817,13 +828,22 @@ def build(pre_labels=None):
 
     # ---------------- XI. Conclusion
     P.heading("XI", "Conclusion")
-    P.para("NavCert Offline captures, rectifies, enhances, reads and parses a certificate entirely on a phone. On "
-           "200 paired synthetic captures, its classical front end lowers mean CER from 9.6% to 4.2% and lifts "
-           "five-field exact match from 69.1% to 88.4%, almost all of it from geometric rectification. Adaptive "
-           "thresholding is the right binarizer under shadow, DCT coding at preview quality costs almost nothing in "
-           "legibility, and fast block matching is unreliable on text unless frames are smoothed first. Pipeline Lab "
-           "makes each operation visible on the user's own scan. The next step is the same paired measurement on "
-           "real certificates photographed with the phone.")
+    P.para("NavCert Offline captures, rectifies, enhances, reads and parses a certificate on the phone alone. On "
+           "200 paired synthetic captures, its classical front end lowers mean CER from 9.6% to 4.2% and raises "
+           "five-field exact match from 69.1% to 88.4%, almost all of it through geometric rectification. Under "
+           "shadow, adaptive thresholding is the only tested binarizer that works. DCT coding at preview quality "
+           "costs almost nothing in legibility, and fast block matching is unreliable on text unless the frames are "
+           "smoothed first. Pipeline Lab displays each operation on the user's own scan. The next step is to repeat "
+           "the paired measurement on real certificates photographed with the phone.")
+
+    # ---------------- acknowledgment
+    P.heading("", "Acknowledgment")
+    P.para("The author prepared the certificate dataset, fine-tuned and evaluated the MiniLM field-extraction model "
+           "(including the human-checked gold set), and selected the image and video processing techniques studied "
+           "in this work. Claude (Anthropic) was used to implement the Android application and the Pipeline Lab, to "
+           "build and run the synthetic image-processing benchmark and its figures under the author's direction, and "
+           "to draft and edit the manuscript text. The author reviewed all results against the generated data files "
+           "and takes full responsibility for the content.")
 
     # ---------------- references
     P.heading("", "References")

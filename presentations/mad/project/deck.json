@@ -8,39 +8,45 @@
  "title": "NavCert Offline — Mobile Application Development",
  "order": [
   "title",
+  "rubric-map",
   "problem",
-  "users",
+  "user-needs",
+  "tools",
   "solution",
   "architecture",
-  "tour-scan",
-  "tour-fields",
-  "tour-ask",
-  "concepts",
-  "standards",
+  "feat-capture",
+  "feat-fields",
+  "course-concepts",
+  "new-concepts",
+  "material-play",
   "testing",
   "contribution",
   "demo",
-  "close"
+  "conclusion"
  ],
  "sections": {
   "s0": {
-   "description": "Title.",
+   "description": "Title and rubric map.",
    "start": "title"
   },
   "s1": {
-   "description": "The problem and who has it.",
+   "description": "Problem, user needs and tools (rubric 1).",
    "start": "problem"
   },
   "s2": {
-   "description": "The app, its architecture and a feature tour.",
+   "description": "Solution, architecture and features.",
    "start": "solution"
   },
   "s3": {
-   "description": "New concepts, standards and testing.",
-   "start": "concepts"
+   "description": "Course concepts and new concepts (rubric 2).",
+   "start": "course-concepts"
   },
   "s4": {
-   "description": "Individual contribution, demo and next steps.",
+   "description": "Material Design, Play Store and testing (rubric 3).",
+   "start": "material-play"
+  },
+  "s5": {
+   "description": "Contribution, demo and conclusion (rubrics 4 and 5).",
    "start": "contribution"
   }
  },
